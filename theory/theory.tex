@@ -750,7 +750,7 @@ The test set stays closed until you have chosen your final model.
 Choice & Idea \\
 \midrule
 Loss & The Dice loss alone can be unstable with tiny objects. Adding cross-entropy (\code{DiceCELoss}), which
-judges every pixel, often makes the training steadier. \\
+judges every pixel, can make the training steadier. Whether it helps on our data is for you to measure. \\
 Augmentation & For a round nodule, flips and rotations by any angle are realistic: more variety for free. \\
 Learning rate & Ten times larger or smaller: look at how the curves change. \\
 Size of the network & A smaller network may be enough for small patches, and overfits less. \\

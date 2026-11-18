@@ -74,11 +74,12 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
    was built from LUNA16, and why, is in `teachers/data_prep/DATASET.md`; `build_dataset.sh` rebuilds it.
 2. **Run the solution notebooks on Kaggle with the GPU and the full dataset.** Write down: the time of one
    epoch, the validation Dice after 20 epochs, the mean test Dice. Then check the three sentences in
-   notebook 03 that state expected values ("around 0.5 - 0.6" in STEP 7, "above 0.9" in STEP 9 and STEP 12)
-   and correct them if needed. Do the same for notebook 04: note the baseline Dice, the noise between the two
+   notebook 03 that state expected values ("around 0.5 - 0.6" in STEP 7, "about 0.98" in STEP 9, "about 0.97"
+   in STEP 12): they come from a run on CPU and should hold, correct them if needed. Do the same for notebook 04: note the baseline Dice, the noise between the two
    seeds and the effect of the two guided experiments, so that you know what to expect when students show you
    their numbers. See "What was tested" below.
-3. **Keep your `lung_segmenter.pth`**: it is the spare model for students who arrive on day 5 without one.
+3. **Spare model**: `teachers/lung_segmenter.pth` is ready for students who arrive on day 5 without one.
+   Replace it with yours if you prefer.
 4. **Check the path of the dataset**: the notebooks use `/kaggle/input/luna16-lung-slices`. If Kaggle mounts
    your dataset elsewhere, change `DATA_DIR` in the six notebooks.
 5. **Check the names of buttons and menus** in `SETUP.md` and `webapp/README.md` against the current Kaggle,
@@ -148,20 +149,26 @@ the questions at the end.
 
 ## What was tested
 
-Everything was run on a computer without GPU, on 89 real LUNA16 patients (subset 0), not on the full 888.
+Everything was run on a computer without GPU, on the full dataset (888 patients, 1186 nodules).
 
 | | Result |
 |---|---|
 | Notebooks 00, 01, 02 (solutions) | run without errors |
-| Notebook 03 (solution) | runs in under 3 minutes on CPU. With 62 training patients: validation Dice 0.93 after 20 epochs, mean test Dice 0.94 on 14 patients, lowest 0.67 (the patient with the wrong mask) |
-| Notebook 04 (solution) | runs in 5 minutes on CPU. With 78 training nodules: baseline validation Dice 0.44, second seed 0.39 (noise 0.05), DiceCE loss 0.55, augmentation 0.39, test Dice 0.50 on 18 nodules. With so few nodules these numbers are unstable: the full dataset has ten times more |
-| Notebook 05 (solution) | runs. With 6 training scans: validation Dice 0.94 after 30 epochs, under 4 minutes on CPU |
-| Handbook | compiles with pdflatex, 13 pages |
+| Notebook 03 (solution) | 16 minutes on CPU (about 40 seconds per epoch). Validation Dice 0.93 after the first epoch, 0.989 at the best epoch. Test: mean Dice 0.978 on 134 patients, lowest 0.17 |
+| Notebook 03, worst test cases | the three lowest are all errors of the reference mask (air around the body labelled as lung, or one lung missing): the model is right. This is the discussion of STEP 12 |
+| Notebook 04 (solution) | 34 minutes on CPU for six trainings. Baseline validation Dice 0.843, second seed 0.835 (noise 0.008), DiceCE loss 0.828, augmentation 0.858, test 0.853 on 170 nodules. The reference table is also in the solution notebook |
+| Notebook 05 (solution) | run on a smaller sample only (6 training scans: validation Dice 0.94 after 30 epochs) |
 | Web app | the completed app runs with the trained model: upload, three pictures, area, Dice. The student `app.py` runs as it is, with nothing filled in |
+| Handbook | compiles with pdflatex, 16 pages; figures made from the full dataset and the spare model |
 | Student notebooks | every cell is valid Python. They were not completed by hand as a student would |
 
-Not tested: a GPU, Kaggle itself, the full dataset, the deploy on Streamlit Community Cloud, the Docker build,
-the GitHub steps.
+`teachers/lung_segmenter.pth` is the model of the run above: the spare for students without a model on day 5.
+
+Not tested: a GPU, Kaggle itself, the deploy on Streamlit Community Cloud, the Docker build, the GitHub steps.
+
+**About the nodule experiments.** The gains are small: the best of the guided experiments improves the
+baseline by 0.015. They are readable because the noise between two runs is about 0.01, but do not promise
+large improvements. The disc masks set a ceiling that no model can pass.
 
 ## Changing the material
 
