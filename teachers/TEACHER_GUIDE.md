@@ -68,9 +68,9 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
 
 ## Before the course
 
-1. **Build the dataset and put it on Kaggle**: `teachers/data_prep/README.md`. Name it `luna16-lung-slices`.
-   It needs about 130 GB of free disk. Step 4 adds the nodule patches for notebook 04; `--volumes 100` adds
-   the 3D scans for notebook 05.
+1. **Put the dataset on Kaggle.** A ready zip is attached to the Releases page of the repository: download
+   it and upload it as a Kaggle dataset named `luna16-lung-slices` (`teachers/data_prep/README.md`). How it
+   was built from LUNA16, and why, is in `teachers/data_prep/DATASET.md`; `build_dataset.sh` rebuilds it.
 2. **Run the solution notebooks on Kaggle with the GPU and the full dataset.** Write down: the time of one
    epoch, the validation Dice after 20 epochs, the mean test Dice. Then check the three sentences in
    notebook 03 that state expected values ("around 0.5 - 0.6" in STEP 7, "above 0.9" in STEP 9 and STEP 12)

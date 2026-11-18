@@ -12,7 +12,7 @@
 \usepackage{array}
 \usepackage{enumitem}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
@@ -101,6 +101,21 @@ The scale is the same on every scanner, which is why a model trained on scans fr
 scans from another.
 
 \begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily, x=0.0042cm]
+\shade[left color=black, right color=white] (-1000,0) rectangle (2000,0.45);
+\draw (-1000,0) rectangle (2000,0.45);
+\foreach \x in {-1000,-500,0,500,1000,1500,2000} { \draw (\x,0) -- (\x,-0.12) node[below] {\x}; }
+\foreach \x/\t in {-1000/air, -700/lung, -80/fat, 50/soft tissue, 1100/bone} { \draw (\x,0.45) -- (\x,0.6); }
+\node[above] at (-1000,0.6) {air};
+\node[above] at (-700,0.6) {lung};
+\node[above] at (-180,0.6) {fat};
+\node[above] at (230,0.6) {soft tissue};
+\node[above] at (1100,0.6) {bone};
+\node[right] at (2040,0.22) {HU};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
 \begin{tabular}{@{}lr@{}}
 \toprule
 Tissue & HU (approximate) \\
@@ -187,6 +202,18 @@ Python library & \code{pydicom} & \code{nibabel} \\
 \end{tabular}
 \end{center}
 
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily]
+\foreach \i in {0,...,5} { \draw[fill=black!8] (\i*0.28,\i*0.16) rectangle ++(1.5,1.0); }
+\node at (2.15,-0.35) {DICOM: one file per slice};
+\draw[-{Stealth[length=2mm]}, thick] (4.0,0.9) -- node[above] {convert} (6.0,0.9);
+\draw[fill=black!8] (7.0,0.1) -- ++(1.5,0) -- ++(0,1.0) -- ++(-1.5,0) -- cycle;
+\draw[fill=black!14] (7.0,1.1) -- ++(0.8,0.5) -- ++(1.5,0) -- ++(-0.8,-0.5) -- cycle;
+\draw[fill=black!20] (8.5,0.1) -- ++(0.8,0.5) -- ++(0,1.0) -- ++(-0.8,-0.5) -- cycle;
+\node at (8.15,-0.35) {NIfTI: one file, a 3D array};
+\end{tikzpicture}
+\end{center}
+
 \textbf{DICOM values.} A DICOM file stores raw integers. Two numbers in the header convert them to Hounsfield
 units:
 \[
@@ -212,13 +239,26 @@ one file, values in HU, no personal data. We work with NIfTI.}
 
 \subsection{Tensors and shapes}
 
-PyTorch works with \term{tensors}: arrays that can live on the GPU. The network expects a precise
+PyTorch works with \term{tensors}: arrays that can live on the \term{GPU}, a processor that does the
+same simple operation on millions of numbers at once. Training a network on a GPU takes minutes; on a normal
+processor, hours. The network expects a precise
 \term{shape}. For a group of 2D images it is
 \[
 (\text{batch},\ \text{channels},\ \text{height},\ \text{width}) \qquad\text{for example}\qquad (16,\ 1,\ 256,\ 256)
 \]
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily]
+\foreach \i in {5,4,...,0} { \draw[fill=black!8] (\i*0.22,\i*0.14) rectangle ++(1.6,1.6); }
+\draw[<->] (0,-0.2) -- node[below] {width 256} (1.6,-0.2);
+\draw[<->] (-0.2,0) -- node[left] {height 256} (-0.2,1.6);
+\draw[<->] (1.75,0.0) -- node[below right] {batch: 16 images} (2.85,0.7);
+\node[align=left] at (6.6,0.9) {each image has 1 channel\\[2pt]\texttt{images.shape} $\rightarrow$ \texttt{(16, 1, 256, 256)}};
+\end{tikzpicture}
+\end{center}
+
 \begin{itemize}
-\item \term{Batch}: how many images are processed together (16).
+\item \term{Batch}: how many images are processed together (16). A larger batch is faster but needs more
+memory; if the GPU runs out of memory, reduce the batch size.
 \item \term{Channels}: how many values each pixel has. A CT slice has 1; a colour photo has 3.
 \item Height and width: all the images of a batch must have the same size.
 \end{itemize}
@@ -245,9 +285,19 @@ A \term{transform} is a function that does one step of the preparation. The step
 \code{Compose} chains them. The final \code{d} in the names means that the transform works on a
 \term{dictionary} \code{\{"image": ..., "label": ...\}}, so image and mask go through the same steps.
 
+\begin{center}
+\includegraphics[width=0.98\linewidth]{pipeline.png}
+\end{center}
+
 \textbf{Interpolation.} Resizing must invent new pixel values. For the image we use \code{"bilinear"}: each
 new pixel is an average of its neighbours. For the mask we use \code{"nearest"}: each new pixel copies the
 closest one. An average of the labels 0 and 1 would give 0.5, which is not a label.
+
+\begin{center}
+\includegraphics[width=0.62\linewidth]{interpolation.png}
+
+{\small The border of a lung mask after resizing, enlarged.}
+\end{center}
 
 \subsection{Data augmentation}
 
@@ -283,6 +333,16 @@ Test & 15\% & used once, at the end, to measure the performance we report \\
 \end{tabular}
 \end{center}
 
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily]
+\draw[fill=black!12] (0,0) rectangle (8.4,0.6); \node at (4.2,0.3) {training 70\%: learn};
+\draw[fill=black!30] (8.4,0) rectangle (10.2,0.6); \node at (9.3,0.3) {validation};
+\draw[fill=black!55] (10.2,0) rectangle (12,0.6); \node[white] at (11.1,0.3) {test};
+\node[align=center] at (9.3,-0.45) {check during\\the training};
+\node[align=center] at (11.1,-0.45) {once,\\at the end};
+\end{tikzpicture}
+\end{center}
+
 Why three and not two? Every choice we make by looking at the validation score (how many epochs, which
 model to keep) fits the model a little to those patients. Only a set that was never looked at gives an honest
 number. All the images of one patient must be in the same set.
@@ -315,6 +375,22 @@ The basic operation on images is the \term{convolution}: a small matrix of weigh
 called a filter, slides over the image and at each position computes a weighted sum of the pixels under it.
 One filter detects one local pattern, such as an edge. A \term{layer} applies many filters; the next layer
 combines their outputs into more complex patterns.
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily, baseline=(current bounding box.center)]
+\foreach \r/\a/\b/\c in {0/-1/0/1, 1/-2/0/2, 2/-1/0/1} {
+  \draw (0,-\r*0.5) rectangle ++(0.5,0.5) node[pos=.5] {\a};
+  \draw (0.5,-\r*0.5) rectangle ++(0.5,0.5) node[pos=.5] {\b};
+  \draw (1.0,-\r*0.5) rectangle ++(0.5,0.5) node[pos=.5] {\c};
+}
+\node at (0.75,-1.3) {a $3 \times 3$ filter};
+\end{tikzpicture}
+\qquad
+\raisebox{-0.5\height}{\includegraphics[width=0.6\linewidth]{convolution.png}}
+
+{\small This filter was chosen by hand to find vertical edges. In a network, the numbers of the filters are the
+weights: the training chooses them.}
+\end{center}
 
 \subsection{The U-Net}
 
@@ -369,6 +445,10 @@ For an input of shape $(16, 1, 256, 256)$ the output has shape $(16, 2, 256, 256
 \item \term{argmax} takes the class with the highest score: this is the predicted label.
 \end{itemize}
 
+\begin{center}
+\includegraphics[width=0.95\linewidth]{output.png}
+\end{center}
+
 \remember{The U-Net goes down to understand what is in the image and up to say where; skip connections keep
 the details. Its output is one score per class for each pixel; argmax gives the mask.}
 
@@ -408,9 +488,21 @@ $|P \cap T|$ is the number of pixels that are lung in both masks; $|P|$ and $|T|
 
 The Dice is 0 when the masks do not touch and 1 when they are identical.
 
-\textbf{Why not accuracy?} Accuracy is the fraction of pixels classified correctly. In a slice where the lung
-is 10\% of the pixels, a model that answers ``background'' everywhere is 90\% accurate and useless. Its Dice
-is 0. The Dice ignores the background, so it is not fooled when the structure is small.
+\textbf{Why not accuracy?} Accuracy is the fraction of pixels classified correctly. Take a slice where the
+lung is 10\% of the pixels, and a model that answers ``background'' everywhere:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & Accuracy & Dice \\
+\midrule
+Model that predicts no lung at all & 90\% & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The model is useless and the accuracy says it is good. The Dice ignores the background, so it is not fooled
+when the structure is small.
 
 \subsection{Loss and metric are two different things}
 
@@ -439,6 +531,12 @@ How does it know in which direction to change millions of weights? For each weig
 step against its gradient makes the loss go down. This is \term{gradient descent}. The size of the step is the
 \term{learning rate}. Too large: the loss jumps around and never settles. Too small: the training is very slow.
 
+\begin{center}
+\includegraphics[width=0.9\linewidth]{learning_rate.png}
+
+{\small Ten steps of gradient descent on a loss with one weight, with three learning rates.}
+\end{center}
+
 \subsection{One training step}
 
 For each batch, five lines:
@@ -459,6 +557,23 @@ e & \code{optimizer.step()} & change the weights \\
 
 The \term{optimizer} is the object that applies the change. We use Adam, a version of gradient descent that
 adapts the size of the step for each weight.
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily,
+  st/.style={draw, fill=black!8, minimum height=0.6cm, minimum width=2.1cm},
+  arr/.style={-{Stealth[length=2mm]}, thick}]
+\node[st] (b) at (0,0) {a batch};
+\node[st] (f) at (3.1,0) {predictions};
+\node[st] (l) at (6.2,0) {loss};
+\node[st] (g) at (9.3,0) {gradients};
+\node[st] (w) at (12.4,0) {new weights};
+\draw[arr] (b) -- node[above] {b} (f);
+\draw[arr] (f) -- node[above] {c} (l);
+\draw[arr] (l) -- node[above] {d} (g);
+\draw[arr] (g) -- node[above] {e} (w);
+\draw[arr] (w.south) -- ++(0,-0.55) -| node[pos=0.25, below] {next batch (a: forget the old gradients)} (b.south);
+\end{tikzpicture}
+\end{center}
 
 \subsection{Epochs and validation}
 
@@ -513,6 +628,10 @@ The test set gives the number to report. Three habits make that number honest.
 \textbf{One value per patient, not only the mean.} A mean Dice of 0.97 can hide one patient at 0.60. Compute the
 Dice of each patient, look at the distribution (minimum, histogram), and look at the worst cases.
 
+\begin{center}
+\includegraphics[width=0.55\linewidth]{test_dice.png}
+\end{center}
+
 \textbf{Look at the failures.} For each bad case ask: is the model wrong, or is the reference mask wrong? What
 do the bad cases have in common (very small lungs at the top or bottom of the chest, disease, an unusual
 scan)? The answers say where the model cannot be trusted.
@@ -537,6 +656,13 @@ $-1000/400$ HU, rescaled to $0/1$, resized to $256 \times 256$. A new image must
 same} preparation. If the application uses another window or another size, nothing crashes: the model simply
 receives images unlike the ones it knows, and its predictions get worse silently. This is the most common
 mistake when a model moves from a notebook to an application.
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{skew.png}
+
+{\small The same slice and the same model. On the right the image was rescaled with another window: no error
+message, and a wrong mask.}
+\end{center}
 
 The steps of inference: load the file, prepare it as in the training, add the batch dimension, run the model
 in evaluation mode without gradients, take the argmax.
@@ -566,9 +692,23 @@ Shape and position & always similar & anywhere, attached to anything \\
 \end{center}
 
 Two consequences. First, \term{class imbalance}: almost every pixel is background, so a model that predicts
-``no nodule'' everywhere is almost always right pixel by pixel. Second, with small objects the Dice is very
-sensitive: a border drawn one pixel too wide changes the Dice of a 5 mm nodule a lot, and that of a lung not
-at all. Expect lower and more variable scores.
+``no nodule'' everywhere is almost always right pixel by pixel.
+
+\begin{center}
+\includegraphics[width=0.7\linewidth]{imbalance.png}
+
+{\small Share of the pixels that belong to the object, on average in our data.}
+\end{center}
+
+Second, with small objects the Dice is very sensitive. Suppose the model finds the object perfectly but draws
+its border one pixel too wide all around:
+
+\begin{center}
+\includegraphics[width=0.6\linewidth]{dice_small.png}
+\end{center}
+
+The same one-pixel mistake costs nothing on a lung and a quarter of the score on a small nodule. Expect lower
+and more variable scores.
 
 To make the nodule visible to the network we do not give it the whole slice but a small \term{patch} cut
 around the nodule.
@@ -646,6 +786,33 @@ Docker & Packs the app with everything it needs (operating system, Python, packa
 this is how software is installed in hospitals. \\
 \bottomrule
 \end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily,
+  st/.style={draw, fill=black!8, minimum height=0.6cm, minimum width=2.6cm, align=center},
+  arr/.style={-{Stealth[length=2mm]}, thick}]
+\node[st] (u) at (0,0) {the user uploads\\a file or clicks};
+\node[st] (r) at (4.4,0) {Streamlit runs\\\texttt{app.py} from the top};
+\node[st] (p) at (8.8,0) {the page\\is drawn again};
+\draw[arr] (u) -- (r); \draw[arr] (r) -- (p);
+\draw[arr] (p.south) -- ++(0,-0.45) -| (u.south);
+\node[st, minimum width=3.4cm] (c) at (4.4,1.35) {model loaded once (cache)};
+\draw[arr, dashed] (c) -- (r);
+\node at (4.4,-1.55) {\textbf{Streamlit}: the whole file runs again at every action};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily]
+\foreach \y/\t/\g in {0/Linux/8, 0.55/Python 3.12/14, 1.1/{packages (\texttt{requirements.txt})}/20, 1.65/{\texttt{app.py} and the model}/26} {
+  \draw[fill=black!\g] (0,\y) rectangle ++(5.2,0.55); \node at (2.6,\y+0.275) {\t};
+}
+
+\draw[-{Stealth[length=2mm]}, thick] (5.6,1.1) -- node[above] {\texttt{docker run}} (8.0,1.1);
+\draw[fill=black!8] (8.2,0.7) rectangle ++(3.4,0.8); \node at (9.9,1.1) {a running container};
+\node at (2.6,-0.35) {\textbf{Docker image}: built layer by layer from the \texttt{Dockerfile}};
+\end{tikzpicture}
 \end{center}
 
 \textbf{MLOps} is the name for everything that keeps a model working after the training: keeping track of

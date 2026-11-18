@@ -329,9 +329,21 @@ def build(args) -> int:
     scans, present = discover_scans(luna, args.subsets)
     if not scans:
         sys.exit(f"no subset*/ folders with .mhd files in {luna}")
-    # case ids are assigned over ALL scans found, in sorted (subset, seriesuid) order -> stable ids
-    ids = {uid: f"case_{i:04d}" for i, (_, uid, _) in enumerate(scans, 1)}
     selected = [t for t in scans if args.subsets is None or t[0] in args.subsets]
+    # --append: continue a dataset built from the previous subsets (case ids go on from the last one)
+    old = old_vol = None
+    if args.append and (out / "metadata.csv").exists():
+        old = pd.read_csv(out / "metadata.csv")
+        selected = [t for t in selected if t[1] not in set(old["seriesuid"])]
+        if not selected:
+            print("nothing to add: all these scans are already in the dataset")
+            return 0
+        if (out / "volumes_lowres/metadata.csv").exists():
+            old_vol = pd.read_csv(out / "volumes_lowres/metadata.csv")
+    offset = 0 if old is None else len(old)
+    # case ids follow the sorted (subset, seriesuid) order -> stable ids
+    numbered = selected if args.append else scans
+    ids = {uid: f"case_{offset + i:04d}" for i, (_, uid, _) in enumerate(numbered, 1)}
     nodule_uids = set()
     ann = Path(args.annotations) if args.annotations else luna / "annotations.csv"
     if ann.exists():
@@ -346,19 +358,21 @@ def build(args) -> int:
         demo_uid = next((u for _, u, _ in scans if args.demo_case in (u, ids[u])), None)
         if demo_uid is None:
             sys.exit(f"--demo-case {args.demo_case} not found")
-    else:
+    elif not (out / "demo").exists():
         demo_uid = selected[0][1]
-    vol_uids = {u for _, u, _ in selected[: args.volumes]}
+    n_volumes = max(0, args.volumes - (0 if old_vol is None else len(old_vol)))
+    vol_uids = {u for _, u, _ in selected[:n_volumes]}
     jobs = []
     for idx, (s, uid, mhd) in enumerate(selected):
         jobs.append(dict(
-            out=str(out), mhd=str(mhd), seg=str(seg_dir / f"{uid}.mhd"), seriesuid=uid, subset=s, index=idx,
+            out=str(out), mhd=str(mhd), seg=str(seg_dir / f"{uid}.mhd"), seriesuid=uid, subset=s, index=offset + idx,
             case_id=ids[uid], seed=args.seed, strategy=args.strategy, min_area_frac=args.min_area_frac,
             n_slices_per_patient=args.slices_per_patient, demo=(uid == demo_uid), demo_slab=args.demo_slab,
             drop_bad_masks=args.drop_bad_masks,            volume=uid in vol_uids, has_nodule=(int(uid in nodule_uids) if has_ann else -1)))
     out.mkdir(parents=True, exist_ok=True)
     print(f"{len(jobs)} scans from subsets {sorted({j['subset'] for j in jobs})} -> {out} "
-          f"(strategy={args.strategy}, workers={args.workers}, demo={ids[demo_uid]}, volumes={len(vol_uids)})")
+          f"(strategy={args.strategy}, workers={args.workers}, demo={ids.get(demo_uid, 'already there')}, "
+          f"volumes={len(vol_uids)})")
     rows, vol_rows, errors, t0 = [], [], [], time.time()
     if args.workers > 1:
         with cf.ProcessPoolExecutor(args.workers) as ex:
@@ -376,11 +390,16 @@ def build(args) -> int:
     wall = time.time() - t0
     if not rows:
         sys.exit("nothing was written")
-    df = pd.DataFrame(rows)[METADATA_COLUMNS + EXTRA_COLUMNS].sort_values("case_id")
+    df = pd.DataFrame(rows)[METADATA_COLUMNS + EXTRA_COLUMNS]
+    if old is not None:
+        df = pd.concat([old, df], ignore_index=True)
+    df = df.sort_values("case_id")
     df.to_csv(out / "metadata.csv", index=False)
     if vol_rows:
-        pd.DataFrame(vol_rows)[VOLUME_COLUMNS].sort_values("case_id").to_csv(
-            out / "volumes_lowres/metadata.csv", index=False)
+        vol_df = pd.DataFrame(vol_rows)[VOLUME_COLUMNS]
+        if old_vol is not None:
+            vol_df = pd.concat([old_vol, vol_df], ignore_index=True)
+        vol_df.sort_values("case_id").to_csv(out / "volumes_lowres/metadata.csv", index=False)
     write_cards(out, args, len(df))
     (out / "build_info.json").write_text(json.dumps(dict(
         script="data_prep/prepare_luna16_slices.py", strategy=args.strategy, seed=args.seed,
@@ -741,6 +760,9 @@ def parse_args(argv=None):
     ap.add_argument("--annotations", type=Path, help="annotations.csv (default: <luna-dir>/annotations.csv)")
     ap.add_argument("--drop-bad-masks", action="store_true",
                     help="skip scans whose chosen slice has lung labels outside the body (failed automatic mask)")
+    ap.add_argument("--append", action="store_true",
+                    help="add the scans to an existing dataset in --out, continuing the case numbers. "
+                         "Lets you build the dataset one subset at a time (process the subsets in order)")
     ap.add_argument("--limit", type=int, help="process only the first N scans (testing)")
     ap.add_argument("--workers", type=int, default=max(1, min(4, (os.cpu_count() or 2))))
     ap.add_argument("--download", action="store_true", help="fetch the needed zips from Zenodo into --luna-dir and extract")
