@@ -27,7 +27,7 @@ web app step by step, moved from chest X-rays to CT.
 | `03_project_lung_segmentation.ipynb` | the project, 13 steps | days 2 to 4 |
 | `04_nodule_segmentation.ipynb` | advanced, for who has finished the project: nodule patches, baseline, experiments. 10 steps | 3 hours or more |
 | `05_optional_3d_segmentation.ipynb` | optional: the same pipeline in 3D, 8 steps | 2 hours |
-| `theory/theory.pdf` | handbook for the students, 13 pages (source `theory.tex`, figures from `make_figures.py`) | |
+| `theory/theory.pdf` | handbook for the students, 16 pages (source `theory.tex`, figures from `make_figures.py`) | |
 | `webapp/` | day 5: guide (`README.md`), `app.py` to complete in 6 steps, Dockerfile, 3 sample slices | day 5 |
 | `solutions/` | the same notebooks completed, with the answers to the "Check yourself" questions; `app.py` completed | |
 | `teachers/` | this guide, `find_the_bugs.md`, the script that builds the dataset | |
