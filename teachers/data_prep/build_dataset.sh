@@ -6,7 +6,7 @@
 #
 # For each subset: download it from Zenodo, extract it, add its slices and its nodule patches to the
 # dataset, delete the scans.  Peak disk use is about 20 GB instead of 130 GB.  It can be interrupted
-# and started again: finished subsets are skipped, downloads resume.
+# and started again: finished subsets are skipped, an interrupted subset starts again from its download.
 # Needs: curl, unzip, md5sum, python with numpy pandas nibabel SimpleITK pydicom tqdm.
 set -euo pipefail
 
@@ -28,11 +28,12 @@ import json, sys
 f = [f for f in json.load(sys.stdin)['files'] if f['key'] == '$name'][0]
 print(f['size'], f['checksum'].replace('md5:', ''))")
   url="https://zenodo.org/api/records/$rec/files/$name/content"
+  rm -f "$WORK/$name" "$WORK/$name".part??
   chunk=$(( (size + CONNECTIONS - 1) / CONNECTIONS ))
   for i in $(seq 0 $((CONNECTIONS - 1))); do
     s=$((i * chunk)); e=$((s + chunk - 1)); [ "$e" -ge "$size" ] && e=$((size - 1))
     [ "$s" -ge "$size" ] && continue
-    curl -sS -L --retry 20 --retry-delay 5 --retry-all-errors -C - -r "$s-$e" \
+    curl -sS -L --retry 20 --retry-delay 5 --retry-all-errors -r "$s-$e" \
          -o "$WORK/$name.part$(printf %02d "$i")" "$url" &
   done
   wait
@@ -51,7 +52,14 @@ fi
 for k in $SUBSETS; do
   if [ -f "$OUT/.subset$k.done" ]; then echo "subset $k: already done"; continue; fi
   echo "=== subset $k: download ($(date +%H:%M))"
-  [ -d "$WORK/subset$k" ] || { fetch "$(record_of "$k")" "subset$k.zip"; unzip -q -o "$WORK/subset$k.zip" -d "$WORK"; rm "$WORK/subset$k.zip"; }
+  if [ ! -d "$WORK/subset$k" ]; then
+    fetch "$(record_of "$k")" "subset$k.zip"
+    # extract in a temporary folder and rename at the end: an interrupted extraction is never taken for a complete one
+    rm -rf "$WORK/extracting"; mkdir "$WORK/extracting"
+    unzip -q -o "$WORK/subset$k.zip" -d "$WORK/extracting"
+    mv "$WORK/extracting/subset$k" "$WORK/subset$k"
+    rm -rf "$WORK/extracting" "$WORK/subset$k.zip"
+  fi
   echo "=== subset $k: slices"
   python3 "$HERE/prepare_luna16_slices.py" --luna-dir "$WORK" --out "$OUT" --subsets "$k" --append --volumes "$VOLUMES"
   echo "=== subset $k: nodules"

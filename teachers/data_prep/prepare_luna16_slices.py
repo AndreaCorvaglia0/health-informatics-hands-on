@@ -598,6 +598,7 @@ def check_dataset(root: Path) -> bool:
     if md["case_id"].duplicated().any():
         problems.append("duplicated case_id")
     stats, bad_axcodes, bad_label, bad_shape, bad_hu, n_rl_ok, n_lr = [], [], [], [], [], 0, 0
+    odd_hu = []
     for _, r in tqdm(list(md.iterrows()), desc="checking", leave=False):
         c = r["case_id"]
         try:
@@ -617,8 +618,11 @@ def check_dataset(root: Path) -> bool:
         sp = np.abs(np.diag(im.affine)[:3])
         if not np.allclose(sp, [r["spacing_x"], r["spacing_y"], r["slice_thickness"]], atol=1e-3):
             warnings.append(f"{c}: affine spacing {sp} differs from metadata")
-        if a.min() < -4000 or a.max() > 5000:
+        extreme = (a < -4000) | (a > 5000)
+        if extreme.mean() > 0.01:       # a large part of the image is not in Hounsfield units
             bad_hu.append(c)
+        elif extreme.any():             # a few pixels: metal or reconstruction artefacts, clipped by the transforms
+            odd_hu.append(c)
         lung = (b == 1) | (b == 2)
         if (b == 1).any() and (b == 2).any():
             n_lr += 1
@@ -634,6 +638,8 @@ def check_dataset(root: Path) -> bool:
                       ("affine axcodes != ('L','P','S')", bad_axcodes), ("implausible HU range", bad_hu)):
         if lst:
             problems.append(f"{name}: {len(lst)} case(s), e.g. {lst[:3]}")
+    if odd_hu:
+        warnings.append(f"{len(odd_hu)} case(s) with a few pixels of extreme value (artefacts): {odd_hu[:6]}")
     frac = n_rl_ok / n_lr if n_lr else 0.0
     if frac <= 0.95:
         problems.append(f"right lung centroid x < left lung centroid x only in {frac:.1%} of cases (need > 95%)")
