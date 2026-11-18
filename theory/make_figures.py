@@ -257,8 +257,10 @@ if MODEL:
         ax.axis("off")
     fig.savefig("figures/skew.png", **save)
 
-    # Dice of each patient on patients the model has not seen (the last 15% of the list)
-    cases = sorted(all_meta.case_id)[-max(14, len(all_meta) * 15 // 100):]
+    # Dice of each test patient: the same split as in the project notebook (STEP 3)
+    from sklearn.model_selection import train_test_split
+    _, other = train_test_split(sorted(all_meta.case_id), test_size=0.3, random_state=42)
+    _, cases = train_test_split(other, test_size=0.5, random_state=42)
     dices = []
     for c in cases:
         _, p = predict(prepare(f"{D}/images/{c}.nii.gz"))
@@ -267,11 +269,11 @@ if MODEL:
         dices.append(2 * (p * true).sum() / (p.sum() + true.sum()))
     dices = np.array(dices)
     fig, ax = plt.subplots(figsize=(4.6, 2.2))
-    ax.hist(dices, bins=np.linspace(min(0.5, dices.min()), 1, 26), color="0.35")
+    ax.hist(dices, bins=np.linspace(0, 1, 41), color="0.35")
     ax.axvline(dices.mean(), color="k", ls="--", lw=0.8)
     ax.annotate(f"mean {dices.mean():.2f}", (dices.mean(), ax.get_ylim()[1] * 0.9), ha="right", fontsize=8,
                 xytext=(-4, 0), textcoords="offset points")
-    ax.annotate(f"worst patient {dices.min():.2f}", (dices.min(), 0.5), xytext=(dices.min(), ax.get_ylim()[1] * 0.45),
+    ax.annotate(f"worst patient {dices.min():.2f}", (dices.min(), 1), xytext=(dices.min(), ax.get_ylim()[1] * 0.45),
                 arrowprops=dict(arrowstyle="->", lw=0.6), fontsize=8, ha="left")
     ax.set_xlabel("Dice of each test patient")
     ax.set_ylabel("patients")

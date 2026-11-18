@@ -13,7 +13,7 @@ set -euo pipefail
 WORK=${1:?work folder for the temporary LUNA16 files}
 OUT=${2:?output dataset folder}
 SUBSETS=${3:-"0 1 2 3 4 5 6 7 8 9"}
-VOLUMES=${VOLUMES:-40}          # low-resolution 3D scans for notebook 05 (taken from the first subset)
+VOLUMES=${VOLUMES:-28}          # low-resolution 3D scans for notebook 05 (taken from the first subset)
 CONNECTIONS=${CONNECTIONS:-16}  # parallel connections per download
 HERE="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$WORK" "$OUT"

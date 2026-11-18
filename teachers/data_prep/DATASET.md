@@ -92,13 +92,14 @@ Only 40 slices are written as DICOM to keep the dataset small.
 
 ## 5. Low-resolution volumes (`volumes_lowres/`)
 
-For the optional 3D notebook (05). The first 40 scans are resampled to voxels of 2.5 mm in every direction
+For the optional 3D notebook (05). The first 28 scans are resampled to voxels of 2.5 mm in every direction
 (linear interpolation for the image, nearest neighbour for the mask): about 150 x 150 x 120 voxels and 3 MB per
 scan.
 
 Why reduced: a full scan has tens of millions of voxels and does not fit in the memory of a free GPU without
-techniques (patches, sliding window) that are beyond this course. Why 40: the lungs are an easy target and a
-3D model learns them from a few dozen scans; more would only make each epoch slower.
+techniques (patches, sliding window) that are beyond this course. Why 28: the lungs are an easy target and a
+3D model learns them from a couple of dozen scans (with 6 training scans it already reached a Dice of 0.94);
+more would make each epoch slower and the dataset larger. `VOLUMES=...` changes the number.
 
 ## 6. What the course dataset is not
 
@@ -120,7 +121,27 @@ techniques (patches, sliding window) that are beyond this course. Why 40: the lu
 
 ## 8. Numbers of the dataset built for the course
 
-BUILD_NUMBERS
+Built on 18 November 2026 from all ten subsets, with `build_dataset.sh` and seed 0.
+
+| | |
+|---|---|
+| Patients (slices) | 888: 89 in each of subsets 0 to 7, 88 in subsets 8 and 9. No scan was skipped |
+| Image size | 512 x 512 for all |
+| Pixel spacing | 0.46 to 0.98 mm, median 0.70 mm |
+| Slice thickness | 0.45 to 2.5 mm, median 1.25 mm |
+| Scans stored with flipped axes, reoriented | 14 |
+| Slices with padding values (below -1500 HU) | 74% |
+| Patients with at least one nodule | 601 |
+| Wrong lung masks, flagged and kept | 5: `case_0011`, `case_0135`, `case_0200`, `case_0554`, `case_0563` |
+| Slices with a few pixels of extreme value (artefacts) | 4: `case_0129`, `case_0314`, `case_0616`, `case_0761`. Removed by the clipping in the transforms |
+| Nodule patches | 1186, from 601 patients. Diameter 3.2 to 32.3 mm, median 6.4 mm |
+| Disc drawn compared with the annotated diameter | on average 99%, at least 86% |
+| Low-resolution 3D scans | 28 |
+| Size | 396 MB zipped: slices 247 MB, 3D scans 83 MB, demonstration scan 75 MB, nodules 15 MB |
+
+Checks done on this copy: `--check` reports `RESULT: OK`; slices and nodule patches from every subset were
+looked at by eye, including the reoriented scans (several are patients lying face down: the table is at the top
+of the picture, the right lung is still on the left).
 
 ## 9. Licence and citation
 

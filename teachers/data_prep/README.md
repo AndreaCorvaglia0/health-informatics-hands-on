@@ -6,8 +6,10 @@ lung mask, a patch around each nodule, one demonstration scan and a few low-reso
 **What is done to the original data, and why, is described in [DATASET.md](DATASET.md).** This page only has
 the commands.
 
-A ready copy of the dataset is attached to the Releases page of the repository: unless you want to change how
-it is built, download that zip and go to "Upload to Kaggle".
+A ready copy of the dataset exists: `luna16-lung-slices.zip` (396 MB), built on 18 November 2026 with these
+scripts. Unless you want to change how it is built, use that zip and go to "Upload to Kaggle". To keep it next
+to the code without putting it in the repository, attach it to a Release (on GitHub: Releases, Draft a new
+release, drop the zip in the assets box).
 
 ## Build it
 
@@ -26,7 +28,7 @@ Options:
 
 - fewer subsets, for a rehearsal: `./build_dataset.sh /data/luna_work luna16-lung-slices "0 1"`
   (each subset has about 89 patients and 110 nodules);
-- number of 3D scans for notebook 05 (default 40): `VOLUMES=60 ./build_dataset.sh ...`
+- number of 3D scans for notebook 05 (default 28): `VOLUMES=60 ./build_dataset.sh ...`
 
 The three Python scripts can also be used by hand, for example to change the rule that chooses the slice:
 `prepare_luna16_slices.py` (slices, demonstration scan, 3D scans; `--help` lists the options, `--check`
@@ -34,7 +36,7 @@ validates a dataset), `prepare_nodule_patches.py` (nodule patches).
 
 ## Upload to Kaggle
 
-1. kaggle.com -> Create -> New Dataset. Upload the zip of the Release as it is (inside it, `images/`, `labels/` and the other folders are at the top level). If you built the dataset yourself, zip the content of the folder, not the folder.
+1. kaggle.com -> Create -> New Dataset. Upload `luna16-lung-slices.zip` as it is (inside it, `images/`, `labels/` and the other folders are at the top level). If you built the dataset yourself, zip the content of the folder, not the folder.
 2. Title: `luna16-lung-slices`. The notebooks expect the path `/kaggle/input/luna16-lung-slices`, with
    `images/` and `labels/` directly inside. If Kaggle mounts it under another path, change the line
    `DATA_DIR = ...` at the top of each notebook before giving them to the students.

@@ -68,8 +68,9 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
 
 ## Before the course
 
-1. **Put the dataset on Kaggle.** A ready zip is attached to the Releases page of the repository: download
-   it and upload it as a Kaggle dataset named `luna16-lung-slices` (`teachers/data_prep/README.md`). How it
+1. **Put the dataset on Kaggle.** The ready zip is `luna16-lung-slices.zip` (396 MB; 888 patients, 1186
+   nodules, 28 low-resolution scans): upload it as a Kaggle dataset named `luna16-lung-slices`
+   (`teachers/data_prep/README.md`). How it
    was built from LUNA16, and why, is in `teachers/data_prep/DATASET.md`; `build_dataset.sh` rebuilds it.
 2. **Run the solution notebooks on Kaggle with the GPU and the full dataset.** Write down: the time of one
    epoch, the validation Dice after 20 epochs, the mean test Dice. Then check the three sentences in
