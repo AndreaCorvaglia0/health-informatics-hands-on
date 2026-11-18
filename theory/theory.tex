@@ -1,0 +1,706 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue!50!black]{hyperref}
+
+\graphicspath{{figures/}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlist{itemsep=0.15em,topsep=0.2em}
+\renewcommand{\arraystretch}{1.25}
+
+\titleformat{\section}{\Large\bfseries\sffamily}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.5em}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.3em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily Lung segmentation hands-on: the theory you need}
+\fancyhead[R]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% "Where it is used" line under a section title
+\newcommand{\usedin}[1]{{\small\sffamily\color{black!60}Used in: #1}\par\vspace{0.2em}}
+% Key term
+\newcommand{\term}[1]{\textbf{#1}}
+% Code
+\newcommand{\code}[1]{\texttt{\small #1}}
+% A short framed summary at the end of a section
+\newcommand{\remember}[1]{%
+  \par\vspace{0.4em}\noindent\fcolorbox{black!35}{black!4}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
+  \textbf{\sffamily Remember.} #1}}\par}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\sffamily Lung segmentation hands-on}\\[0.4em]
+{\Large\sffamily The theory you need}\\[0.8em]
+{\small MSc Health Informatics, Advanced Topics in Machine Learning}
+\end{center}
+
+\vspace{0.5em}
+
+This handbook contains the ideas behind the exercises, and nothing else. It follows the order of the course:
+each section says in which notebook it is used. Read a section before the corresponding part, and come back to
+it when a step of the project is not clear. The last page is an index of the terms.
+
+\vspace{0.3em}
+\begin{center}
+\begin{tabular}{@{}cll@{}}
+\toprule
+Section & Topic & Used in \\
+\midrule
+1 & CT images & Notebook 01 \\
+2 & Files: DICOM and NIfTI & Notebook 01 \\
+3 & Preparing the data for a network & Notebook 02; project STEP 3--5 \\
+4 & The segmentation network & Project STEP 6 \\
+5 & Loss and metric: the Dice & Project STEP 7 \\
+6 & Training & Project STEP 8--11 \\
+7 & Is the model good? & Project STEP 12 \\
+8 & Using the model & Project STEP 13; web app \\
+9 & Lung nodules and experiments & Notebook 04 \\
+10 & From a model to a web app & Day 5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ---------------------------------------------------------------------------
+\section{CT images}
+\usedin{notebook 01, sections 2--6}
+
+\subsection{An image is a matrix of numbers}
+
+A CT scanner sends X-rays through the body from many angles and computes how much each small piece of the
+body attenuates them. The result is a stack of \term{slices}. One slice is a matrix, usually of
+$512 \times 512$ numbers: each number is one \term{pixel}. Stacking the slices gives a 3D array; an element of
+it is called a \term{voxel}.
+
+In Python a slice is a NumPy array. Everything we do, from plotting to training, is arithmetic on arrays.
+
+\subsection{Hounsfield units}
+
+The numbers of a CT image have a physical meaning. They are expressed in \term{Hounsfield units (HU)}, a scale
+where water is 0 and air is $-1000$. Dense tissue attenuates more and has higher values.
+The scale is the same on every scanner, which is why a model trained on scans from one hospital can read
+scans from another.
+
+\begin{center}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Tissue & HU (approximate) \\
+\midrule
+Air & $-1000$ \\
+Lung & $-900$ to $-500$ \\
+Fat & $-100$ to $-50$ \\
+Water & $0$ \\
+Soft tissue (muscle, organs, blood) & $20$ to $80$ \\
+Bone & $300$ to $2000$ \\
+\bottomrule
+\end{tabular}
+\qquad
+\raisebox{-0.5\height}{\includegraphics[width=0.48\linewidth]{histogram.png}}
+\end{center}
+
+Lung is mostly air, so it is much darker than everything around it. This contrast is what makes lung
+segmentation an easy task.
+
+Some scans contain values far below $-1000$ (for example $-2000$ or $-3024$) outside the circular area
+measured by the scanner. They are not tissue and must be cut away.
+
+\subsection{Windowing}
+
+A CT image has thousands of different values, a screen shows a few hundred grey levels. A \term{window} is a
+range of HU, from $\mathrm{HU}_{\min}$ to $\mathrm{HU}_{\max}$, that is stretched over the whole grey scale.
+Values below the range become black, values above become white.
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{windows.png}
+\end{center}
+
+The same operation prepares the image for a neural network, which works best with small numbers. We cut the
+values to the window and rescale them between 0 and 1:
+\[
+x_{\text{scaled}} = \frac{\operatorname{clip}(x,\ \mathrm{HU}_{\min},\ \mathrm{HU}_{\max}) - \mathrm{HU}_{\min}}
+{\mathrm{HU}_{\max} - \mathrm{HU}_{\min}}
+\]
+In the course we always use $\mathrm{HU}_{\min} = -1000$ and $\mathrm{HU}_{\max} = 400$.
+
+\subsection{Segmentation masks}
+
+To \term{segment} an image means to decide, for every pixel, which structure it belongs to. The answer is a
+\term{mask}: an image of the same size where each pixel holds a \term{label}, a whole number. In the project:
+0 for background, 1 for lung.
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{mask.png}
+\end{center}
+
+The masks we use as the correct answer are called \term{ground truth} or reference. In our dataset they were
+produced by an automatic program, not drawn by radiologists: most are very good, a few are wrong.
+
+\subsection{Pixel spacing}
+
+A pixel covers a small area of the patient. Its side, in millimetres, is the \term{pixel spacing}; the distance
+between two slices is the \term{slice thickness}. Both are written in the file and change from scan to scan.
+They turn counts of pixels into real measurements:
+\[
+\text{area (cm}^2) = \frac{\text{number of pixels} \times \text{spacing}_x \times \text{spacing}_y}{100}
+\]
+
+\remember{A CT slice is a matrix of Hounsfield units. A window selects the range we care about. A mask gives
+one label per pixel. The spacing converts pixels to millimetres.}
+
+% ---------------------------------------------------------------------------
+\section{Files: DICOM and NIfTI}
+\usedin{notebook 01, sections 7--9}
+
+A medical image file contains the pixels and a \term{header}: information on how to interpret them (size,
+spacing, position in the patient).
+
+\begin{center}
+\begin{tabular}{@{}p{3.2cm}p{5.6cm}p{5.6cm}@{}}
+\toprule
+ & DICOM (\code{.dcm}) & NIfTI (\code{.nii}, \code{.nii.gz}) \\
+\midrule
+Where it is used & hospitals, scanners & research, deep learning \\
+One scan is & a folder with one file per slice & one file \\
+Pixel values & raw integers, to be converted & ready to use \\
+Patient data & name, date of birth, \dots & none \\
+Python library & \code{pydicom} & \code{nibabel} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{DICOM values.} A DICOM file stores raw integers. Two numbers in the header convert them to Hounsfield
+units:
+\[
+\mathrm{HU} = \text{stored value} \times \text{RescaleSlope} + \text{RescaleIntercept}
+\]
+
+\textbf{Order of the slices.} The files of a DICOM folder are not guaranteed to be in order. The position of
+each slice along the body is the third number of the tag \code{ImagePositionPatient}: sort by it before
+stacking the slices.
+
+\textbf{Privacy.} DICOM headers contain personal data. Files must be anonymised before they leave the hospital.
+
+\textbf{Orientation.} By convention an axial slice is shown as if we looked at the patient from the feet: the
+patient's right side is on the left of the picture. In our files the first axis of the array is $x$, so we plot
+the transposed array, \code{image.T}.
+
+\remember{DICOM is the clinical format: many files, raw values, personal data. NIfTI is the research format:
+one file, values in HU, no personal data. We work with NIfTI.}
+
+% ---------------------------------------------------------------------------
+\section{Preparing the data for a network}
+\usedin{notebook 02; project STEP 3, 4 and 5}
+
+\subsection{Tensors and shapes}
+
+PyTorch works with \term{tensors}: arrays that can live on the GPU. The network expects a precise
+\term{shape}. For a group of 2D images it is
+\[
+(\text{batch},\ \text{channels},\ \text{height},\ \text{width}) \qquad\text{for example}\qquad (16,\ 1,\ 256,\ 256)
+\]
+\begin{itemize}
+\item \term{Batch}: how many images are processed together (16).
+\item \term{Channels}: how many values each pixel has. A CT slice has 1; a colour photo has 3.
+\item Height and width: all the images of a batch must have the same size.
+\end{itemize}
+When something fails in PyTorch, the first thing to do is to print the shapes.
+
+\subsection{Transforms}
+
+A \term{transform} is a function that does one step of the preparation. The steps of our pipeline:
+
+\begin{center}
+\begin{tabular}{@{}clp{8.3cm}@{}}
+\toprule
+ & MONAI transform & What it does \\
+\midrule
+1 & \code{LoadImaged} & reads the files \\
+2 & \code{EnsureChannelFirstd} & adds the channel: $(512, 512) \rightarrow (1, 512, 512)$ \\
+3 & \code{Lambdad} with our function & label: lung $\rightarrow 1$, everything else $\rightarrow 0$ \\
+4 & \code{ScaleIntensityRanged} & image: window $-1000/400$ HU rescaled to $0/1$ (section 1.3) \\
+5 & \code{Resized} & image and label to $256 \times 256$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\code{Compose} chains them. The final \code{d} in the names means that the transform works on a
+\term{dictionary} \code{\{"image": ..., "label": ...\}}, so image and mask go through the same steps.
+
+\textbf{Interpolation.} Resizing must invent new pixel values. For the image we use \code{"bilinear"}: each
+new pixel is an average of its neighbours. For the mask we use \code{"nearest"}: each new pixel copies the
+closest one. An average of the labels 0 and 1 would give 0.5, which is not a label.
+
+\subsection{Data augmentation}
+
+A network learns from examples, and we have few. \term{Data augmentation} shows the network a slightly
+different version of each image at every epoch: rotated by a few degrees, a little larger or smaller, shifted.
+The network sees more variety and becomes more robust.
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{augmentation.png}
+\end{center}
+
+Three rules:
+\begin{itemize}
+\item the same random change is applied to the image and to its mask;
+\item the result must still look like a real image (small changes);
+\item augmentation is used \emph{only} on the training set.
+\end{itemize}
+
+\subsection{Training, validation and test sets}
+
+We divide the patients in three groups, and each group has one job.
+
+\begin{center}
+\begin{tabular}{@{}llp{9cm}@{}}
+\toprule
+Set & Share & Job \\
+\midrule
+Training & 70\% & the network learns from these images \\
+Validation & 15\% & during the training, tells us how the network does on images it is not learning from; we
+use it to choose when to stop \\
+Test & 15\% & used once, at the end, to measure the performance we report \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Why three and not two? Every choice we make by looking at the validation score (how many epochs, which
+model to keep) fits the model a little to those patients. Only a set that was never looked at gives an honest
+number. All the images of one patient must be in the same set.
+
+\subsection{Dataset and DataLoader}
+
+\begin{itemize}
+\item A \term{Dataset} knows how many samples there are and how to produce sample number $i$ (read the files,
+apply the transforms).
+\item A \term{DataLoader} asks the Dataset for samples and groups them in batches. With \code{shuffle=True}
+the order changes at every epoch, which helps the training.
+\end{itemize}
+
+\remember{The network wants tensors of shape (batch, channels, height, width) with values between 0 and 1.
+Transforms prepare them. Augmentation only for training. The test set is opened once, at the end.}
+
+% ---------------------------------------------------------------------------
+\section{The segmentation network}
+\usedin{project STEP 6}
+
+\subsection{What a neural network is, in three sentences}
+
+A neural network is a function with millions of adjustable numbers, the \term{weights}. It takes an image and
+returns a prediction. \term{Training} means adjusting the weights until the predictions are close to the
+correct answers.
+
+\subsection{Convolutions}
+
+The basic operation on images is the \term{convolution}: a small matrix of weights (for example $3 \times 3$),
+called a filter, slides over the image and at each position computes a weighted sum of the pixels under it.
+One filter detects one local pattern, such as an edge. A \term{layer} applies many filters; the next layer
+combines their outputs into more complex patterns.
+
+\subsection{The U-Net}
+
+The \term{U-Net} is the standard network for medical image segmentation. It has two halves.
+
+\begin{center}
+\begin{tikzpicture}[
+  blk/.style={draw, fill=black!8, minimum width=1.5cm, minimum height=0.62cm, font=\small\sffamily},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  skip/.style={-{Stealth[length=2mm]}, dashed}]
+\node[blk] (e1) at (0,0) {256, 16};
+\node[blk] (e2) at (1.3,-1) {128, 32};
+\node[blk] (e3) at (2.6,-2) {64, 64};
+\node[blk] (e4) at (3.9,-3) {32, 128};
+\node[blk] (b)  at (5.6,-4) {16, 256};
+\node[blk] (d4) at (7.3,-3) {32, 128};
+\node[blk] (d3) at (8.6,-2) {64, 64};
+\node[blk] (d2) at (9.9,-1) {128, 32};
+\node[blk] (d1) at (11.2,0) {256, 16};
+\draw[arr] (e1) -- (e2); \draw[arr] (e2) -- (e3); \draw[arr] (e3) -- (e4); \draw[arr] (e4) -- (b);
+\draw[arr] (b) -- (d4); \draw[arr] (d4) -- (d3); \draw[arr] (d3) -- (d2); \draw[arr] (d2) -- (d1);
+\draw[skip] (e1) -- (d1); \draw[skip] (e2) -- (d2); \draw[skip] (e3) -- (d3); \draw[skip] (e4) -- (d4);
+\node[font=\small\sffamily, left=0.2cm of e1] {image};
+\node[font=\small\sffamily, right=0.2cm of d1] {scores};
+\node[font=\small\sffamily] at (1.2,-3.6) {encoder};
+\node[font=\small\sffamily] at (10,-3.6) {decoder};
+\node[font=\small\sffamily] at (5.6,0.3) {skip connections};
+\end{tikzpicture}
+
+{\small Each box: size of the image at that level, number of filters. This is the network of the project.}
+\end{center}
+
+\begin{itemize}
+\item The \term{encoder} (left) halves the size of the image at each level and increases the number of
+filters. Going down, the network sees a larger part of the image at once and understands \emph{what} is there,
+but loses the exact position.
+\item The \term{decoder} (right) doubles the size at each level, back to the original, to say \emph{where}.
+\item The \term{skip connections} (dashed) copy the details from the encoder to the decoder at the same level.
+They are the reason why the borders of the predicted mask are sharp.
+\end{itemize}
+
+In the code: \code{channels=(16, 32, 64, 128, 256)} are the filters at each level,
+\code{strides=(2, 2, 2, 2)} says that the size is halved four times. The size of the input must therefore be
+divisible by $2^4 = 16$.
+
+\subsection{What comes out}
+
+For an input of shape $(16, 1, 256, 256)$ the output has shape $(16, 2, 256, 256)$: for each pixel, one
+\term{score} per class (background, lung). Two operations turn scores into an answer:
+\begin{itemize}
+\item \term{softmax} turns the scores of a pixel into probabilities that add up to 1;
+\item \term{argmax} takes the class with the highest score: this is the predicted label.
+\end{itemize}
+
+\remember{The U-Net goes down to understand what is in the image and up to say where; skip connections keep
+the details. Its output is one score per class for each pixel; argmax gives the mask.}
+
+% ---------------------------------------------------------------------------
+\section{Loss and metric: the Dice}
+\usedin{project STEP 7}
+
+\subsection{The Dice score}
+
+To compare a predicted mask $P$ with the true mask $T$ we measure how much they overlap:
+\[
+\text{Dice} = \frac{2\,|P \cap T|}{|P| + |T|}
+\]
+$|P \cap T|$ is the number of pixels that are lung in both masks; $|P|$ and $|T|$ are the lung pixels of each.
+
+\begin{center}
+\begin{tikzpicture}[font=\small\sffamily]
+\begin{scope}
+  \fill[black!18] (0,0) circle (0.8); \fill[black!18] (2.6,0) circle (0.8);
+  \draw (0,0) circle (0.8); \draw (2.6,0) circle (0.8);
+  \node at (1.3,-1.25) {Dice = 0};
+\end{scope}
+\begin{scope}[xshift=5.2cm]
+  \fill[black!18] (0,0) circle (0.8); \fill[black!18] (0.8,0) circle (0.8);
+  \begin{scope} \clip (0,0) circle (0.8); \fill[black!55] (0.8,0) circle (0.8); \end{scope}
+  \draw (0,0) circle (0.8); \draw (0.8,0) circle (0.8);
+  \node at (0.4,-1.25) {Dice $\approx$ 0.4};
+\end{scope}
+\begin{scope}[xshift=9.2cm]
+  \fill[black!18] (0,0) circle (0.8); \fill[black!18] (0.2,0) circle (0.8);
+  \begin{scope} \clip (0,0) circle (0.8); \fill[black!55] (0.2,0) circle (0.8); \end{scope}
+  \draw (0,0) circle (0.8); \draw (0.2,0) circle (0.8);
+  \node at (0.1,-1.25) {Dice $\approx$ 0.85};
+\end{scope}
+\end{tikzpicture}
+\end{center}
+
+The Dice is 0 when the masks do not touch and 1 when they are identical.
+
+\textbf{Why not accuracy?} Accuracy is the fraction of pixels classified correctly. In a slice where the lung
+is 10\% of the pixels, a model that answers ``background'' everywhere is 90\% accurate and useless. Its Dice
+is 0. The Dice ignores the background, so it is not fooled when the structure is small.
+
+\subsection{Loss and metric are two different things}
+
+\begin{itemize}
+\item The \term{loss} is the number the training makes smaller. It must change smoothly when the weights
+change, so it is computed on the probabilities, not on the final mask. We use the \term{Dice loss}:
+$1 - \text{Dice}$, computed on probabilities. It is 0 for a perfect prediction.
+\item The \term{metric} is the number we read to judge the model: the Dice score on the final masks, after
+argmax.
+\end{itemize}
+
+\remember{Dice measures overlap, from 0 to 1, and is not fooled by a large background. The loss is for the
+training, the metric is for us.}
+
+% ---------------------------------------------------------------------------
+\section{Training}
+\usedin{project STEP 8, 9, 10 and 11}
+
+\subsection{The idea}
+
+Training is a loop: show the network some images, measure how wrong it is, change the weights a little so that
+it is less wrong, repeat.
+
+How does it know in which direction to change millions of weights? For each weight PyTorch computes the
+\term{gradient}: how much the loss would change if that weight changed a little. Moving every weight a small
+step against its gradient makes the loss go down. This is \term{gradient descent}. The size of the step is the
+\term{learning rate}. Too large: the loss jumps around and never settles. Too small: the training is very slow.
+
+\subsection{One training step}
+
+For each batch, five lines:
+
+\begin{center}
+\begin{tabular}{@{}cll@{}}
+\toprule
+ & Code & Meaning \\
+\midrule
+a & \code{optimizer.zero\_grad()} & delete the gradients of the previous step \\
+b & \code{outputs = model(images)} & compute the predictions \\
+c & \code{loss = loss\_function(outputs, labels)} & measure the error \\
+d & \code{loss.backward()} & compute the gradients \\
+e & \code{optimizer.step()} & change the weights \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The \term{optimizer} is the object that applies the change. We use Adam, a version of gradient descent that
+adapts the size of the step for each weight.
+
+\subsection{Epochs and validation}
+
+An \term{epoch} is one pass over all the training images. After each epoch we measure the Dice on the
+validation set. Two details of the code:
+\begin{itemize}
+\item \code{model.train()} and \code{model.eval()} switch the network between training and evaluation mode
+(some layers behave differently in the two);
+\item \code{with torch.no\_grad():} tells PyTorch not to compute gradients, because during validation we do
+not change the weights.
+\end{itemize}
+
+\subsection{Learning curves and overfitting}
+
+\begin{center}
+\includegraphics[width=0.85\linewidth]{curves.png}
+\end{center}
+
+The training loss goes down as long as we train. The validation Dice goes up, then flattens. If we continue,
+the network starts to memorise the training images instead of learning what a lung looks like: the training
+loss keeps improving while the validation Dice gets worse. This is \term{overfitting}.
+
+This is why we save the weights every time the \emph{validation} Dice reaches a new maximum, and keep that
+file as our model.
+
+\subsection{If the training does not work}
+
+\begin{center}
+\begin{tabular}{@{}p{6.2cm}p{8.6cm}@{}}
+\toprule
+What you see & Likely cause \\
+\midrule
+The loss does not change & \code{loss.backward()} or \code{optimizer.step()} is missing \\
+The loss jumps up and down & learning rate too large, or \code{zero\_grad()} is missing \\
+The loss goes down, the Dice stays near 0 & labels are wrong: check the values of the mask after the
+transforms \\
+Error about devices & images or labels were not moved to the GPU with \code{.to(device)} \\
+Error about sizes & print the shapes of images, labels and outputs \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\remember{Five lines per batch: zero\_grad, forward, loss, backward, step. Watch the validation Dice, not the
+training loss, and keep the model with the best validation Dice.}
+
+% ---------------------------------------------------------------------------
+\section{Is the model good?}
+\usedin{project STEP 12}
+
+The test set gives the number to report. Three habits make that number honest.
+
+\textbf{One value per patient, not only the mean.} A mean Dice of 0.97 can hide one patient at 0.60. Compute the
+Dice of each patient, look at the distribution (minimum, histogram), and look at the worst cases.
+
+\textbf{Look at the failures.} For each bad case ask: is the model wrong, or is the reference mask wrong? What
+do the bad cases have in common (very small lungs at the top or bottom of the chest, disease, an unusual
+scan)? The answers say where the model cannot be trusted.
+
+\textbf{Know the limits of the data.} Our reference masks are automatic, so a high Dice means ``the model agrees
+with another program''. All patients come from one public dataset of adults. A good result here is a good
+student project, not a clinical tool.
+
+\remember{Report the distribution, not only the mean. Look at the worst cases. Say what the data cannot tell.}
+
+% ---------------------------------------------------------------------------
+\section{Using the model}
+\usedin{project STEP 13; web app}
+
+\term{Inference} means using a trained model on a new image, with no mask and no training.
+
+\textbf{What a saved model is.} The file \code{lung\_segmenter.pth} contains only the weights. To use it we must
+first build the same network (same \code{channels}, same \code{strides}) and then load the weights into it.
+
+\textbf{The rule of inference.} The model has learned from images prepared in one precise way: window
+$-1000/400$ HU, rescaled to $0/1$, resized to $256 \times 256$. A new image must go through \emph{exactly the
+same} preparation. If the application uses another window or another size, nothing crashes: the model simply
+receives images unlike the ones it knows, and its predictions get worse silently. This is the most common
+mistake when a model moves from a notebook to an application.
+
+The steps of inference: load the file, prepare it as in the training, add the batch dimension, run the model
+in evaluation mode without gradients, take the argmax.
+
+\remember{A model is weights plus the exact preparation of its input. Change the preparation and the model
+fails without telling you.}
+
+% ---------------------------------------------------------------------------
+\section{Lung nodules and experiments}
+\usedin{notebook 04}
+
+\subsection{Why nodules are harder than lungs}
+
+A lung nodule is a small round lesion, from 3 to 30 mm. Segmenting it is a different problem from segmenting
+the lung:
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ & Lung & Nodule \\
+\midrule
+Size in the image & a third of the slice & a few dozen pixels \\
+Contrast & air against tissue & tissue against vessels and chest wall \\
+Shape and position & always similar & anywhere, attached to anything \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two consequences. First, \term{class imbalance}: almost every pixel is background, so a model that predicts
+``no nodule'' everywhere is almost always right pixel by pixel. Second, with small objects the Dice is very
+sensitive: a border drawn one pixel too wide changes the Dice of a 5 mm nodule a lot, and that of a lung not
+at all. Expect lower and more variable scores.
+
+To make the nodule visible to the network we do not give it the whole slice but a small \term{patch} cut
+around the nodule.
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{nodules.png}
+
+{\small Six patches of $64 \times 64$ pixels with the mask of the nodule (red) and its diameter.}
+\end{center}
+
+In our dataset the masks are discs: we know the centre and the diameter of each nodule, measured by
+radiologists, but not its outline. Real nodules are not perfect circles, so no model can reach a Dice of 1
+against these masks.
+
+\subsection{How to run an experiment}
+
+With lungs, almost any reasonable choice gives a Dice near 0.97. With nodules the choices matter, so this is
+where we experiment. An experiment answers one question, and only if it is done in an orderly way:
+
+\begin{enumerate}
+\item \textbf{Start from a baseline.} Train a first model and write down its validation Dice.
+\item \textbf{Change one thing.} If you change the loss and the learning rate together and the result
+improves, you do not know which of the two helped.
+\item \textbf{Write what you expect before you run.} One line. It forces you to think, and makes the
+result informative even when it surprises you.
+\item \textbf{Compare on the validation set}, with the same patients for every experiment.
+\item \textbf{Do not trust small differences.} Train the same model twice with two different random seeds: the
+two results differ. A change that improves the Dice by less than that difference has shown nothing.
+\item \textbf{Keep a table}: what you changed, the result, what you conclude.
+\end{enumerate}
+
+The test set stays closed until you have chosen your final model.
+
+\subsection{What can be changed}
+
+\begin{center}
+\begin{tabular}{@{}p{3.6cm}p{11.2cm}@{}}
+\toprule
+Choice & Idea \\
+\midrule
+Loss & The Dice loss alone can be unstable with tiny objects. Adding cross-entropy (\code{DiceCELoss}), which
+judges every pixel, often makes the training steadier. \\
+Augmentation & For a round nodule, flips and rotations by any angle are realistic: more variety for free. \\
+Learning rate & Ten times larger or smaller: look at how the curves change. \\
+Size of the network & A smaller network may be enough for small patches, and overfits less. \\
+Number of epochs & Small datasets overfit quickly: check where the validation Dice peaks. \\
+Intensity window & A narrower window around lung and soft tissue gives the nodule more contrast. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\remember{Small objects mean imbalance and unstable scores. Experiment one change at a time, against a
+baseline, and compare differences with the noise between two identical runs.}
+
+% ---------------------------------------------------------------------------
+\section{From a model to a web app}
+\usedin{day 5}
+
+A model in a notebook is useful only to the person who wrote it. Turning it into something others can use
+takes a few tools, each with one purpose.
+
+\begin{center}
+\begin{tabular}{@{}>{\raggedright}p{3.4cm}p{11.4cm}@{}}
+\toprule
+Tool & Purpose \\
+\midrule
+Virtual environment & A private copy of Python for one project, with its own packages. The file
+\code{requirements.txt} lists them, so that anybody can rebuild the same environment. \\
+Streamlit & Turns a Python file into a web page. The file is run from top to bottom at every action of the
+user, so slow things, such as loading the model, are stored with \code{@st.cache\_resource}. \\
+Git & Records the history of the files of a project: each \term{commit} is a saved version. \\
+GitHub & Keeps a copy of the project online. The service that publishes the app reads the files from there. \\
+Docker & Packs the app with everything it needs (operating system, Python, packages, model) into an
+\term{image}. A running image is a \term{container}. The same image runs identically on any computer:
+this is how software is installed in hospitals. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{MLOps} is the name for everything that keeps a model working after the training: keeping track of
+which data and which code produced which model, checking that the application prepares the data as in the
+training, noticing when the model meets images unlike the ones it knows, and training it again when needed.
+
+A public demo is not a medical device. Never upload real patient data to it.
+
+% ---------------------------------------------------------------------------
+\newpage
+\section*{Index of terms}
+
+\begin{center}
+\begin{tabular}{@{}llp{9cm}@{}}
+\toprule
+Term & Section & In one line \\
+\midrule
+Argmax & 4.4 & the class with the highest score \\
+Augmentation & 3.3 & random small changes of the training images \\
+Batch & 3.1 & the images processed together \\
+Channel & 3.1 & how many values each pixel has \\
+Class imbalance & 9.1 & one class has far more pixels than the other \\
+Container, image (Docker) & 10 & an app packed with everything it needs \\
+Convolution & 4.2 & a small filter sliding over the image \\
+DataLoader & 3.5 & groups the samples in batches \\
+Dataset & 3.5 & gives sample number $i$ \\
+Dice & 5.1 & overlap between two masks, from 0 to 1 \\
+DICOM & 2 & clinical image format, one file per slice \\
+Encoder, decoder & 4.3 & the two halves of the U-Net \\
+Epoch & 6.3 & one pass over the training images \\
+Gradient & 6.1 & how the loss changes when a weight changes \\
+Ground truth & 1.4 & the mask taken as the correct answer \\
+Hounsfield unit & 1.2 & the unit of CT values: water 0, air $-1000$ \\
+Inference & 8 & using a trained model on new images \\
+Interpolation & 3.2 & how new pixels are computed when resizing \\
+Learning rate & 6.1 & the size of each change of the weights \\
+Loss & 5.2 & the error that the training reduces \\
+Mask, label & 1.4 & one whole number per pixel \\
+Metric & 5.2 & the number we read to judge the model \\
+NIfTI & 2 & research image format, one file per scan \\
+Optimizer & 6.2 & the object that changes the weights \\
+Overfitting & 6.4 & memorising the training images \\
+Patch & 9.1 & a small piece cut from an image \\
+Pixel spacing & 1.5 & the size of a pixel in millimetres \\
+Skip connection & 4.3 & carries details from encoder to decoder \\
+Softmax & 4.4 & turns scores into probabilities \\
+Tensor, shape & 3.1 & the arrays of PyTorch and their dimensions \\
+Training, validation, test & 3.4 & learn, check while learning, measure at the end \\
+Transform & 3.2 & one step of the preparation of the data \\
+U-Net & 4.3 & the standard network for segmentation \\
+Virtual environment & 10 & a private Python for one project \\
+Weights & 4.1 & the adjustable numbers of a network \\
+Window & 1.3 & the range of HU that is shown or kept \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

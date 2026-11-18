@@ -12,10 +12,12 @@ check how good it is, and publish it as a web page.
 | 1 | Medical images and how to prepare them | `00_environment_check`, `01_medical_images`, `02_monai_transforms` |
 | 2 | Project: data, transforms, model, loss | `03_project_lung_segmentation`, STEP 1 to 7 |
 | 3 | Project: training and results | `03_project_lung_segmentation`, STEP 8 to 11 |
-| 4 | Project: test set, using the model | `03_project_lung_segmentation`, STEP 12 and 13 |
+| 4 | Project: test set, using the model. Then lung nodules | `03_project_lung_segmentation`, STEP 12 and 13; `04_nodule_segmentation` |
 | 5 | The web app | folder `webapp` |
 
-If the class is ahead of schedule: `04_optional_3d_segmentation`.
+Everybody finishes the project: a trained model that segments the lungs. Who finishes early goes on, without
+waiting, to `04_nodule_segmentation`: the same code on a harder problem, with room for experiments.
+`05_optional_3d_segmentation` is one more optional topic.
 
 ## Where to start
 
@@ -28,10 +30,12 @@ If the class is ahead of schedule: `04_optional_3d_segmentation`.
 - **Notebooks 01 and 02** are lessons: run the cells, read, and do the exercises at the end.
 - **Notebook 03** is the project, where you spend most of the time. It is divided in steps. Each step has a
   numbered list of things to do, a cell to complete, and a "You should see" to check your result.
+- **Notebook 04** is the advanced part: a baseline, its mistakes, and experiments to improve it.
+- **`theory/theory.pdf`** is the handbook: the theory behind each part, in the order of the course.
 - **`webapp/README.md`** is the guide for day 5.
 - [SYLLABUS.md](SYLLABUS.md) lists the topics of each day and where to study them further.
 
-Notebooks 01 to 04 run on Kaggle. The web app runs on your laptop.
+Notebooks 00 to 05 run on Kaggle. The web app runs on your laptop.
 
 ## Data
 

@@ -65,7 +65,7 @@ You must do this for every new notebook.
 In the right panel open **Session options** (or **Settings**):
 
 1. **Internet**: On.
-2. **Accelerator**: `None` for notebooks 00, 01 and 02. `GPU T4 x2` for notebooks 03 and 04.
+2. **Accelerator**: `None` for notebooks 00, 01 and 02. `GPU T4 x2` for notebooks 03, 04 and 05.
 
 Kaggle gives about 30 hours of GPU per week. Turn the GPU on only when the notebook says so.
 

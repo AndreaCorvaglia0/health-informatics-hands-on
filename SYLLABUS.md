@@ -1,7 +1,7 @@
 # Syllabus
 
-For each day: what everybody does (**core**), what is there for those who are ahead (**extra**), and where to
-study further.
+For each day: what everybody does (**core**), what is there for those who are ahead (**advanced** and
+**extra**), and where to study further. The theory of every part is in `theory/theory.pdf`, in the same order.
 
 ## Day 1 - Medical images and how to prepare them
 
@@ -53,28 +53,31 @@ Seminar: how a network learns, reading the learning curves, overfitting.
 | The training loop, validation, saving the best model | core | 03, STEP 9 |
 | Learning curves | core | 03, STEP 10 |
 | Looking at the predictions; downloading the model | core | 03, STEP 11 |
-| Experiments: augmentation, learning rate, data size, network size, loss, image size | extra | 03, "Extra experiments" |
 
 Study further
 - PyTorch, the optimisation loop: https://pytorch.org/tutorials/beginner/basics/optimization_tutorial.html
 - A recipe for training neural networks: https://karpathy.github.io/2019/04/25/recipe/
 - MONAI tutorial, the same pipeline on the spleen: https://github.com/Project-MONAI/tutorials/blob/main/3d_segmentation/spleen_segmentation_3d.ipynb
 
-## Day 4 - Project: is it good? Using the model
+## Day 4 - Project: is it good? Then lung nodules
 
-No seminar. We finish the project and, if there is time, start the setup of day 5.
+No seminar. Everybody finishes the project. Who has finished works on the nodules.
 
 | Topic | Level | Where |
 |---|---|---|
 | Performance on the test set, patient by patient; worst cases | core | 03, STEP 12 |
 | Using the model on a new file; same preprocessing as in training | core | 03, STEP 13 |
-| Right and left lung; threshold baseline; find the bugs; your own U-Net | extra | 03, "Extra experiments" |
-| 3D segmentation | extra (whole class) | 04 |
+| Lung nodules: patches, split by patient, a baseline and its mistakes | advanced | 04, STEP 1 to 7 |
+| Experiments: noise between runs, loss, augmentation, learning rate, network size | advanced | 04, STEP 8 to 10 |
+| Threshold baseline; right and left lung; find the bugs | extra | 03, "If you have finished" |
+| 3D segmentation | extra | 05 |
 
 Study further
 - Choosing metrics, Metrics Reloaded: https://arxiv.org/abs/2206.01653
-- MONAI metrics: https://docs.monai.io/en/stable/metrics.html
+- MONAI metrics and losses: https://docs.monai.io/en/stable/metrics.html , https://docs.monai.io/en/stable/losses.html
 - Lung segmentation is a data problem (Hofmanninger et al. 2020): https://doi.org/10.1186/s41747-020-00173-2
+- LUNA16, the nodule challenge: https://luna16.grand-challenge.org/
+- Losses for segmentation, a comparison: https://arxiv.org/abs/2005.13449
 - nnU-Net: https://arxiv.org/abs/1809.10486
 
 ## Day 5 - The web app
