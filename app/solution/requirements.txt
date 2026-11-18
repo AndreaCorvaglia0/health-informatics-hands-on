@@ -1,0 +1,10 @@
+# CPU-only PyTorch: the default Linux wheel on PyPI bundles CUDA (~2 GB), the CPU wheel is ~200 MB.
+# With this extra index, pip prefers the "+cpu" build of torch.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1
+monai==1.6.1
+streamlit==1.67.0
+numpy>=2.0
+scipy>=1.13
+nibabel>=5.2
+pydicom>=2.4
