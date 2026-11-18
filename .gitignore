@@ -1,12 +1,4 @@
 __pycache__/
-*.pyc
-.pytest_cache/
 .ipynb_checkpoints/
 .venv/
-*.executed.ipynb
-# data, models and outputs never go to git
-data/
-outputs/
-dist/
-runs/
-*.zip
+.DS_Store
