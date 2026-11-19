@@ -25,12 +25,11 @@ worst cases of our run as a question and leaves the answer to the students (the 
 - The pictures come from our dataset and from the reference run of the solutions (CT slices, masks, curves,
   worst cases, the web app). The numbers on the slides are the ones of the solutions.
 - Facts about the outside world have their source in the notes of the slide.
-- Pictures that are not ours (retina, skin lesion, mammogram, chest X-ray, brain MRI) come from Wikimedia
+- Pictures that are not ours (retina, skin lesion, mammogram, chest X-ray, brain MRI, PET, CT scanner) come from Wikimedia
   Commons; author and licence are in the notes of their slide.
 
 ## To do before the course
 
-- Deck 2, slide "Different machines, different physics": one empty frame for a PET image.
 - If you have them, add your own screenshots: a notebook on Kaggle (deck 0), the app online and the GitHub
   repository (deck 5).
 - Deck 1, slide "Already in the clinic": the slide says "1,000+" devices on the FDA list. Check the current
