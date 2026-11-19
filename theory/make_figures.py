@@ -3,6 +3,8 @@
     python make_figures.py /path/to/luna16-lung-slices
 
 figures/app.png is a screenshot of the web app (solutions/app.py) and is not made here.
+figures/modalities.png and figures/intro_*.jpg are pictures prepared once (our dataset and Wikimedia Commons;
+credits in theory.tex) and are not made here either.
 """
 import sys
 

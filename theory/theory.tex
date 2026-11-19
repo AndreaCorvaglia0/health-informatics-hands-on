@@ -66,6 +66,7 @@ it when a step of the project is not clear. The last page is an index of the ter
 \toprule
 Section & Topic & Used in \\
 \midrule
+-- & Deep learning in medicine (background) & Seminar 1 \\
 1 & CT images & Notebook 01 \\
 2 & Files: DICOM and NIfTI & Notebook 01 \\
 3 & Preparing the data for a network & Notebook 02; project STEP 3--5 \\
@@ -80,6 +81,92 @@ Section & Topic & Used in \\
 \end{tabular}
 \end{center}
 
+% ---------------------------------------------------------------------------
+\newpage
+\section*{Before you start: what deep learning does in medicine}
+\usedin{seminar 1. Background: you do not need this part for the exercises}
+
+\begin{minipage}[c]{0.3\linewidth}
+\includegraphics[width=\linewidth]{intro_ct.jpg}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.64\linewidth}
+Take one CT slice. A doctor can ask four different questions about it:
+\begin{enumerate}[itemsep=0.35em]
+\item \textbf{Is something wrong?}
+\item \textbf{Where is it?}
+\item \textbf{How big is it, and what shape?}
+\item \textbf{What will happen to this patient?}
+\end{enumerate}
+Each question is a different job for a neural network. Nobody writes the rules: the network learns the answer
+from many images that already have the right answer.
+\end{minipage}
+
+\vspace{0.8em}
+\newcommand{\job}[3]{\par\noindent\begin{minipage}[c]{5.3cm}#1\end{minipage}\hfill
+\begin{minipage}[c]{9.9cm}{\sffamily\bfseries\large #2}\par\vspace{0.25em}#3\end{minipage}\par\vspace{0.75em}}
+\newcommand{\pic}[1]{\includegraphics[width=2.45cm]{#1}}
+\job{\pic{intro_retina.jpg}\hspace{0.15cm}\pic{intro_skin.jpg}}{1. Classify: one answer for the whole image}{A photograph
+of the retina is graded for diabetic retinopathy; a photograph of a skin lesion is called benign or
+malignant. One of the first networks for skin lesions learned from about 130\,000 photographs.}
+\job{\pic{intro_detect.jpg}\hspace{0.15cm}\pic{intro_mammo.jpg}}{2. Detect: a box around each finding}{Lung nodules, a
+few millimetres wide, in the CT scans of a screening programme; suspicious areas in mammograms.
+The network points, the radiologist looks.}
+\job{\pic{intro_segment.jpg}\hspace{0.15cm}\pic{intro_nodule.jpg}}{3. Segment: an answer for every pixel}{The outline of
+an organ or of a lesion gives its size and shape: volumes, plans for radiotherapy, growth between
+two scans. Free tools outline more than 100 structures in a CT. \textbf{This is what you build in this course.}}
+\job{\begin{tikzpicture}[font=\footnotesize\sffamily, b/.style={draw, fill=black!8, minimum height=0.62cm, minimum width=2.1cm, align=center}]
+\node[b] (i) at (0,0.42) {image};
+\node[b] (c) at (0,-0.42) {clinical data};
+\node[b, minimum width=1.5cm] (r) at (3.3,0) {risk};
+\draw[-{Stealth[length=2mm]}, thick] (i.east) -- (r.west);
+\draw[-{Stealth[length=2mm]}, thick] (c.east) -- (r.west);
+\end{tikzpicture}}{4. Predict: what happens next}{The risk of a disease, the survival, the response to a therapy.
+Here the image is usually combined with other data about the patient (this is the topic of the optional module
+on multimodal models).}
+
+\vspace{0.6em}
+\textbf{In hospitals today.} More than a thousand medical devices based on these methods are on the list of the
+American regulator (FDA), most of them in radiology. Each one does a single narrow task, and it helps a doctor:
+a person still signs the report.
+
+\newpage
+\textbf{Why medicine is harder than everyday photographs.}
+
+\begin{center}
+\begin{tabular}{@{}p{7.3cm}p{7.3cm}@{}}
+\fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Few labelled images.} Anybody can label a
+photograph of a cat. A label on a CT costs the time of a radiologist.}} &
+\fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Labels are opinions.} Two experts draw two
+different borders. Our reference masks were drawn by a program.}} \\[0.5em]
+\fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Every hospital is different.} Other scanners,
+other settings, other patients: a model can work in one place and fail in another.}} &
+\fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Mistakes cost.} So a model is judged on patients it
+has never seen, and one looks at its worst cases, not only at the average.}} \\
+\end{tabular}
+\end{center}
+
+\textbf{How a project is built, and where it is in this handbook.} The model is one step out of five.
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily,
+  st/.style={draw, fill=black!8, minimum height=1.5cm, minimum width=2.45cm, align=center},
+  arr/.style={-{Stealth[length=2mm]}, thick}]
+\node[st] (a) at (0,0) {\textbf{Data}\\CT scans, masks\\sections 1--2};
+\node[st] (b) at (3.05,0) {\textbf{Preparation}\\transforms, split\\section 3};
+\node[st, fill=black!22] (c) at (6.1,0) {\textbf{Model}\\U-Net, training\\sections 4--6};
+\node[st] (d) at (9.15,0) {\textbf{Evaluation}\\test set, failures\\sections 7, 9};
+\node[st] (e) at (12.2,0) {\textbf{Product}\\a web app\\sections 8, 10};
+\draw[arr] (a) -- (b); \draw[arr] (b) -- (c); \draw[arr] (c) -- (d); \draw[arr] (d) -- (e);
+\node at (0,-1.05) {day 1}; \node at (3.05,-1.05) {days 1--2}; \node at (6.1,-1.05) {days 2--3};
+\node at (9.15,-1.05) {day 4}; \node at (12.2,-1.05) {day 5};
+\end{tikzpicture}
+\end{center}
+
+{\scriptsize To read more: Gulshan et al., JAMA 2016 (retina); Esteva et al., Nature 2017 (skin); Ardila et al., Nature Medicine 2019
+(lung screening CT); McKinney et al., Nature 2020 (mammography); Wasserthal et al., Radiology: AI 2023 (TotalSegmentator).
+Pictures of the retina (M.~H\"aggstr\"om), skin lesion (Braga et al., CC BY 4.0) and mammogram (National Cancer Institute): Wikimedia Commons.}
+
+\vspace{0.6em}
 % ---------------------------------------------------------------------------
 \section{CT images}
 \usedin{notebook 01, sections 2--6}
@@ -959,7 +1046,9 @@ A public demo is not a medical device. Never upload real patient data to it.
 \newpage
 \section*{Index of terms}
 
+\renewcommand{\arraystretch}{1.08}
 \begin{center}
+\small
 \begin{tabular}{@{}llp{9cm}@{}}
 \toprule
 Term & Section & In one line \\
