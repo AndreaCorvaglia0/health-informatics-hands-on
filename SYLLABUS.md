@@ -5,7 +5,7 @@ For each day: what everybody does (**core**), what is there for those who are ah
 
 ## Day 1 - Medical images and how to prepare them
 
-Introduction: imaging modalities, how a CT scanner works, the project of the week.
+Course presentation, then two seminars: deep learning in medicine (an overview); medical images and their files.
 
 | Topic | Level | Where |
 |---|---|---|
@@ -100,3 +100,25 @@ Study further
 - Docker, getting started: https://docs.docker.com/get-started/
 - Model cards, how to describe a model honestly: https://arxiv.org/abs/1810.03993
 - Hidden technical debt in machine learning systems: https://papers.nips.cc/paper_files/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html
+
+## Extra module - Multimodal fusion (optional, outside the five days)
+
+Only for who has finished the project, the nodules and wants more. Separate folder: `extra_multimodal/`.
+The clinical data of this module are invented; the images are the nodule patches of notebook 04.
+
+| Topic | Level | Where |
+|---|---|---|
+| A clinical table and a model on it | extra | multimodal_fusion, STEP 1-4 |
+| Measurements from a mask (radiomics) | extra | multimodal_fusion, STEP 5 |
+| Early and late fusion | extra | multimodal_fusion, STEP 6-7 |
+| Embeddings from a pretrained network | extra | multimodal_fusion, STEP 8 |
+| Intermediate fusion | extra | multimodal_fusion, STEP 9 |
+
+Theory: `extra_multimodal/handbook.pdf`.
+
+Study further
+- Fusion of imaging and health records (early, joint, late): https://pmc.ncbi.nlm.nih.gov/articles/PMC7567861
+- MONAI tutorials, multimodal: https://github.com/Project-MONAI/tutorials/tree/main/multimodal
+- CMU course on multimodal machine learning: https://cmu-mmml.github.io/
+- PyRadiomics: https://pyradiomics.readthedocs.io
+- Survival analysis, basic concepts: https://pmc.ncbi.nlm.nih.gov/articles/PMC2394262/

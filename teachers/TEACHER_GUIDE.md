@@ -31,6 +31,8 @@ web app step by step, moved from chest X-rays to CT.
 | `webapp/` | day 5: guide (`README.md`), `app.py` to complete in 6 steps, Dockerfile, 3 sample slices | day 5 |
 | `solutions/` | the same notebooks completed, with the answers to the "Check yourself" questions; `app.py` completed | |
 | `teachers/` | this guide, `find_the_bugs.md`, the script that builds the dataset | |
+| `seminars/` | the list of the slide decks (one per seminar) with their links, and the outline of each | |
+| `extra_multimodal/` | separate optional module on multimodal fusion: notebook (10 steps), solution, handbook of 7 pages | 2 hours |
 
 Give the students everything except `solutions/` and `teachers/`.
 
@@ -132,6 +134,8 @@ Notebook 04
    find the bugs (`teachers/find_the_bugs.md`).
 4. Notebook 05, 3D.
 5. Day 5: Dice with the true mask, sliders, download button, choice among several models.
+6. Only for who has done all of this: `extra_multimodal/`, images and clinical data together. It is outside
+   the path of the course on purpose: its clinical data are invented and it runs on CPU.
 
 ## About the nodule data
 

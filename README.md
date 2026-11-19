@@ -34,6 +34,8 @@ waiting, to `04_nodule_segmentation`: the same code on a harder problem, with ro
 - **`theory/theory.pdf`** is the handbook: the theory behind each part, in the order of the course.
 - **`webapp/README.md`** is the guide for day 5.
 - [SYLLABUS.md](SYLLABUS.md) lists the topics of each day and where to study them further.
+- **`extra_multimodal/`** is a separate optional module on models that use images and clinical data together.
+  Open it only if you have finished everything else.
 
 Notebooks 00 to 05 run on Kaggle. The web app runs on your laptop.
 
@@ -47,4 +49,4 @@ What we build here is a student project, not a medical device.
 ---
 
 For teachers: the folders `solutions` and `teachers` are not for the students. Start from
-`teachers/TEACHER_GUIDE.md`.
+`teachers/TEACHER_GUIDE.md`. The slides of the seminars are listed in `seminars/README.md`.
