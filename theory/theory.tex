@@ -84,12 +84,41 @@ Section & Topic & Used in \\
 \section{CT images}
 \usedin{notebook 01, sections 2--6}
 
+CT is one of several ways to look inside the body. Each machine measures something different, so the numbers
+in its images mean different things. This handbook is about CT only.
+
+\begin{center}
+\begin{minipage}{\linewidth}\centering
+\includegraphics[width=0.95\linewidth]{modalities.png}
+
+{\scriptsize X-ray: M.~H\"aggstr\"om; MRI: user 511KeV (CC BY-SA 4.0); PET: J.~Maus. All from Wikimedia Commons. CT: our dataset.}
+\end{minipage}
+\end{center}
+
 \subsection{An image is a matrix of numbers}
 
 A CT scanner sends X-rays through the body from many angles and computes how much each small piece of the
 body attenuates them. The result is a stack of \term{slices}. One slice is a matrix, usually of
 $512 \times 512$ numbers: each number is one \term{pixel}. Stacking the slices gives a 3D array; an element of
 it is called a \term{voxel}.
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily]
+\draw[black!45] (0,0) circle (1.55);
+\draw[fill=black!12] (0,0) ellipse (0.85 and 0.55);
+\node at (0,0) {patient};
+\draw[fill=black!60] (-0.18,1.47) rectangle (0.18,1.72);
+\node[left] at (-0.3,1.62) {X-ray tube};
+\fill[black!25, opacity=0.5] (0,1.47) -- (-1.05,-1.14) arc (227:313:1.55) -- cycle;
+\draw[line width=2.2pt] (-1.05,-1.14) arc (227:313:1.55);
+\node[right] at (1.15,-1.25) {detectors};
+\draw[-{Stealth[length=2mm]}, thick] (1.9,0.5) arc (15:75:1.95);
+\node[right, align=left] at (2.0,0.2) {tube and detectors\\turn around the patient};
+\draw[-{Stealth[length=2mm]}, thick] (5.6,0) -- node[above] {a computer} node[below] {rebuilds} (7.3,0);
+\draw[fill=black!8] (7.7,-0.75) rectangle ++(1.5,1.5);
+\node at (8.45,0) {one slice};
+\end{tikzpicture}
+\end{center}
 
 In Python a slice is a NumPy array. Everything we do, from plotting to training, is arithmetic on arrays.
 
@@ -226,9 +255,22 @@ stacking the slices.
 
 \textbf{Privacy.} DICOM headers contain personal data. Files must be anonymised before they leave the hospital.
 
+\textbf{A scan is a volume.} Stacking the slices gives a 3D array that can be cut in three directions. In our
+demo scan a pixel is 0.76~mm wide and the slices are 2.5~mm apart, so a voxel is not a cube. To show the front
+and side views with the right proportions, the plot must know the slice thickness (in the notebook:
+\code{aspect}); ignoring it flattens the body. The same holds for every measurement of length, area or volume.
+
+\begin{center}
+\includegraphics[width=0.95\linewidth]{volume.png}
+\end{center}
+
 \textbf{Orientation.} By convention an axial slice is shown as if we looked at the patient from the feet: the
 patient's right side is on the left of the picture. In our files the first axis of the array is $x$, so we plot
 the transposed array, \code{image.T}.
+
+\begin{center}
+\includegraphics[width=0.5\linewidth]{orientation.png}
+\end{center}
 
 \remember{DICOM is the clinical format: many files, raw values, personal data. NIfTI is the research format:
 one file, values in HU, no personal data. We work with NIfTI.}
@@ -392,6 +434,15 @@ combines their outputs into more complex patterns.
 weights: the training chooses them.}
 \end{center}
 
+\begin{center}
+\begin{minipage}{\linewidth}\centering
+\includegraphics[width=0.95\linewidth]{features.png}
+
+{\small The output of a filter is called a \term{feature map}. These are three of the 16 maps that the first
+layer of our trained lung model computes for one slice: nobody chose these filters.}
+\end{minipage}
+\end{center}
+
 \subsection{The U-Net}
 
 The \term{U-Net} is the standard network for medical image segmentation. It has two halves.
@@ -447,6 +498,15 @@ For an input of shape $(16, 1, 256, 256)$ the output has shape $(16, 2, 256, 256
 
 \begin{center}
 \includegraphics[width=0.95\linewidth]{output.png}
+\end{center}
+
+\begin{center}
+\begin{minipage}{\linewidth}\centering
+\includegraphics[width=0.95\linewidth]{encoder.png}
+
+{\small Why the U-Net needs both halves. The encoder halves the image four times: at $16 \times 16$ the network
+sees the whole chest at once, but the border of the lungs is lost. The decoder and the skip connections bring it back.}
+\end{minipage}
 \end{center}
 
 \remember{The U-Net goes down to understand what is in the image and up to say where; skip connections keep
@@ -693,6 +753,15 @@ Dice of each patient, look at the distribution (minimum, histogram), and look at
 do the bad cases have in common (very small lungs at the top or bottom of the chest, disease, an unusual
 scan)? The answers say where the model cannot be trusted.
 
+\begin{center}
+\begin{minipage}{\linewidth}\centering
+\includegraphics[width=0.5\linewidth]{worst.png}
+
+{\small The three worst test patients of our run. For each one: is the model wrong, or the reference mask?
+Yours will be different patients: look at them in STEP 12.}
+\end{minipage}
+\end{center}
+
 \textbf{Know the limits of the data.} Our reference masks are automatic, so a high Dice means ``the model agrees
 with another program''. All patients come from one public dataset of adults. A good result here is a good
 student project, not a clinical tool.
@@ -872,6 +941,14 @@ this is how software is installed in hospitals. \\
 \end{tikzpicture}
 \end{center}
 
+\begin{center}
+\begin{minipage}{\linewidth}\centering
+\includegraphics[width=0.42\linewidth]{app.png}
+
+{\small The web app of day 5: a slice is uploaded, the model finds the lungs, the page shows the mask and the lung area.}
+\end{minipage}
+\end{center}
+
 \textbf{MLOps} is the name for everything that keeps a model working after the training: keeping track of
 which data and which code produced which model, checking that the application prepares the data as in the
 training, noticing when the model meets images unlike the ones it knows, and training it again when needed.
@@ -903,7 +980,7 @@ DICOM & 2 & clinical image format, one file per slice \\
 Encoder, decoder & 4.3 & the two halves of the U-Net \\
 Epoch & 6.3 & one pass over the training images \\
 Gradient & 6.1 & how the loss changes when a weight changes \\
-Ground truth & 1.4 & the mask taken as the correct answer \\
+Feature map & 4.2 & the output of one filter of a layer \\
 Hounsfield unit & 1.2 & the unit of CT values: water 0, air $-1000$ \\
 Inference & 8 & using a trained model on new images \\
 Interpolation & 3.2 & how new pixels are computed when resizing \\
@@ -916,12 +993,14 @@ Optimizer & 6.2 & the object that changes the weights \\
 Overfitting & 6.4 & memorising the training images \\
 Patch & 9.1 & a small piece cut from an image \\
 Pixel spacing & 1.5 & the size of a pixel in millimetres \\
+Reference mask & 1.4 & the mask taken as the correct answer (``ground truth'') \\
 Skip connection & 4.3 & carries details from encoder to decoder \\
 Softmax & 4.4 & turns scores into probabilities \\
 Tensor, shape & 3.1 & the arrays of PyTorch and their dimensions \\
 Training, validation, test & 3.4 & learn, check while learning, measure at the end \\
 Transform & 3.2 & one step of the preparation of the data \\
 U-Net & 4.3 & the standard network for segmentation \\
+Voxel, volume & 1.1, 2 & an element of the 3D array; the stack of the slices \\
 Virtual environment & 10 & a private Python for one project \\
 Weights & 4.1 & the adjustable numbers of a network \\
 Window & 1.3 & the range of HU that is shown or kept \\

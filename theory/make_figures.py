@@ -1,6 +1,8 @@
 """Regenerate the figures of the handbook from the course dataset.
 
     python make_figures.py /path/to/luna16-lung-slices
+
+figures/app.png is a screenshot of the web app (solutions/app.py) and is not made here.
 """
 import sys
 
@@ -213,6 +215,46 @@ for dd, name in [(7, "5 mm nodule"), (28, "20 mm nodule"), (160, "lung")]:
 ax.set_ylim(0.5, 1.02)
 fig.savefig("figures/dice_small.png", **save)
 
+# a scan is a volume: three views, and what happens if the slice thickness is ignored
+from scipy import ndimage
+vol_file = nib.load(f"{D}/demo/volume/case_0001_image.nii.gz")
+vol = vol_file.get_fdata()
+sx, sy, sz = [float(v) for v in vol_file.header.get_zooms()]
+nx, ny, nz = vol.shape
+coronal = vol[:, ny // 2, ::-1]
+sagittal = vol[nx // 3, :, ::-1]
+fig, axes = plt.subplots(1, 4, figsize=(7.5, 2.3), gridspec_kw={"width_ratios": [1, 1, 1, 1]})
+axes[0].imshow(vol[:, :, nz // 2].T, cmap="gray", vmin=-1000, vmax=400)
+axes[0].set_title("axial (one slice)", fontsize=8)
+axes[1].imshow(coronal.T, cmap="gray", vmin=-1000, vmax=400, aspect=sz / sx)
+axes[1].set_title("coronal (from the front)", fontsize=8)
+axes[2].imshow(sagittal.T, cmap="gray", vmin=-1000, vmax=400, aspect=sz / sy)
+axes[2].set_title("sagittal (from the side)", fontsize=8)
+axes[3].imshow(coronal.T, cmap="gray", vmin=-1000, vmax=400, aspect=1)
+axes[3].set_title("coronal, thickness ignored", fontsize=8)
+for ax in axes:
+    ax.axis("off")
+fig.savefig("figures/volume.png", **save)
+
+# orientation: the same array shown as stored and transposed
+fig, axes = plt.subplots(1, 2, figsize=(4.4, 2.3))
+axes[0].imshow(image, cmap="gray", vmin=-1000, vmax=400)
+axes[0].set_title("plt.imshow(image)", fontsize=8)
+axes[1].imshow(image.T, cmap="gray", vmin=-1000, vmax=400)
+axes[1].set_title("plt.imshow(image.T)", fontsize=8)
+for ax in axes:
+    ax.axis("off")
+fig.savefig("figures/orientation.png", **save)
+
+# what the encoder does to the image: 256, 128, 64, 32, 16 pixels per side
+small = ndimage.zoom((np.clip(image, -1000, 400) + 1000) / 1400, 256 / image.shape[0], order=1)
+fig, axes = plt.subplots(1, 5, figsize=(7.5, 1.7))
+for ax, n in zip(axes, [256, 128, 64, 32, 16]):
+    ax.imshow(small.reshape(n, 256 // n, n, 256 // n).mean(axis=(1, 3)).T, cmap="gray", vmin=0, vmax=1, interpolation="nearest")
+    ax.set_title(f"{n} x {n}", fontsize=8)
+    ax.axis("off")
+fig.savefig("figures/encoder.png", **save)
+
 if MODEL:
     model = UNet(spatial_dims=2, in_channels=1, out_channels=2, channels=(16, 32, 64, 128, 256),
                  strides=(2, 2, 2, 2), num_res_units=2)
@@ -278,4 +320,38 @@ if MODEL:
     ax.set_xlabel("Dice of each test patient")
     ax.set_ylabel("patients")
     fig.savefig("figures/test_dice.png", **save)
+    # what the first layer of the trained network computes: three of its 16 maps
+    maps = {}
+    hook = model.model[0].register_forward_hook(lambda module, inp, out: maps.setdefault("first", out))
+    with torch.no_grad():
+        model(x[None])
+    hook.remove()
+    first = maps["first"][0].numpy()
+    order = np.argsort(-first.reshape(len(first), -1).std(axis=1))
+    fig, axes = plt.subplots(1, 4, figsize=(7.5, 2.1))
+    axes[0].imshow(x[0].T, cmap="gray")
+    axes[0].set_title("input", fontsize=8)
+    for ax, k in zip(axes[1:], order[:3]):
+        ax.imshow(first[k].T, cmap="magma", vmin=np.percentile(first[k], 1), vmax=np.percentile(first[k], 99))
+        ax.set_title("one map of the first layer", fontsize=8)
+    for ax in axes:
+        ax.axis("off")
+    fig.savefig("figures/features.png", **save)
+
+    # the three worst test patients: slice, reference mask, prediction
+    worst = np.argsort(dices)[:3]
+    fig, axes = plt.subplots(3, 3, figsize=(4.6, 4.6))
+    for col, k in enumerate(worst):
+        xk = prepare(f"{D}/images/{cases[k]}.nii.gz")
+        _, pk = predict(xk)
+        lab = nib.load(f"{D}/labels/{cases[k]}.nii.gz").get_fdata()
+        ref = np.asarray(Resize((256, 256), mode="nearest")(torch.tensor(((lab == 1) | (lab == 2))[None].astype(np.float32))))[0]
+        for row, arr in enumerate([np.asarray(xk[0]), ref, pk]):
+            axes[row, col].imshow(arr.T, cmap="gray")
+            axes[row, col].set_xticks([]); axes[row, col].set_yticks([])
+        axes[0, col].set_title(f"Dice {dices[k]:.2f}", fontsize=8)
+    for row, name in enumerate(["slice", "reference mask", "prediction"]):
+        axes[row, 0].set_ylabel(name, fontsize=8)
+    fig.savefig("figures/worst.png", **save)
+
     print(f"model figures done ({len(cases)} patients, mean Dice {dices.mean():.3f}, min {dices.min():.3f})")
