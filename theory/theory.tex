@@ -507,15 +507,72 @@ when the structure is small.
 \subsection{Loss and metric are two different things}
 
 \begin{itemize}
-\item The \term{loss} is the number the training makes smaller. It must change smoothly when the weights
-change, so it is computed on the probabilities, not on the final mask. We use the \term{Dice loss}:
-$1 - \text{Dice}$, computed on probabilities. It is 0 for a perfect prediction.
+\item The \term{loss} is the number the training makes smaller. The network learns only from it.
 \item The \term{metric} is the number we read to judge the model: the Dice score on the final masks, after
 argmax.
 \end{itemize}
 
-\remember{Dice measures overlap, from 0 to 1, and is not fooled by a large background. The loss is for the
-training, the metric is for us.}
+Why not use the Dice score itself as the loss? Because of the argmax. To change the weights in the right
+direction, the loss must change a little when the weights change a little (section 6.1). A mask does not: a
+pixel is 0 or 1, and a small change of the weights usually leaves every pixel as it was. The Dice score would
+stay identical and the network would get no information on how to improve.
+
+\subsection{The Dice loss}
+
+The \term{Dice loss} is the same formula computed on the \emph{probabilities} instead of the mask. For each
+pixel $i$ let $p_i$ be the probability of ``lung'' given by the network (after softmax, between 0 and 1) and
+$t_i$ the true label (0 or 1):
+\[
+\text{Dice loss} = 1 - \frac{2 \sum_i p_i\, t_i}{\sum_i p_i + \sum_i t_i}
+\]
+The sum $\sum_i p_i t_i$ is the ``soft'' overlap: it adds up the probability that the network gives to the
+pixels that really are lung. The loss is 0 when the network gives probability 1 to every lung pixel and 0 to
+all the others, and goes towards 1 as the overlap disappears. Every small change of a probability changes it,
+so the network always knows in which direction to move.
+
+An example on a row of six pixels:
+
+\begin{center}
+\begin{tikzpicture}[font=\footnotesize\sffamily, x=1.05cm, y=0.62cm]
+% true labels
+\node[anchor=east] at (-0.15,2.5) {true label $t$};
+\foreach \i/\v/\g in {0/0/0, 1/0/0, 2/1/70, 3/1/70, 4/1/70, 5/0/0} {
+  \draw[fill=black!\g] (\i,2) rectangle ++(1,1); \node[text=\ifnum\g>50 white\else black\fi] at (\i+0.5,2.5) {\v}; }
+% prediction A
+\node[anchor=east] at (-0.15,1.0) {prediction A, $p$};
+\foreach \i/\v/\g in {0/0.1/7, 1/0.1/7, 2/0.9/63, 3/0.9/63, 4/0.8/56, 5/0.1/7} {
+  \draw[fill=black!\g] (\i,0.5) rectangle ++(1,1); \node[text=\ifnum\g>50 white\else black\fi] at (\i+0.5,1.0) {\v}; }
+\node[anchor=west] at (6.2,1.0) {loss $= 1 - \dfrac{2 \times 2.6}{2.9 + 3} = 0.12$};
+% prediction B
+\node[anchor=east] at (-0.15,-0.5) {prediction B, $p$};
+\foreach \i in {0,...,5} { \draw[fill=black!35] (\i,-1) rectangle ++(1,1); \node at (\i+0.5,-0.5) {0.5}; }
+\node[anchor=west] at (6.2,-0.5) {loss $= 1 - \dfrac{2 \times 1.5}{3 + 3} = 0.50$};
+\end{tikzpicture}
+\end{center}
+
+Prediction A is right and fairly sure: low loss. Its mask after argmax is perfect (Dice score 1), yet the loss
+is not 0: it still pushes the network to be more confident. Prediction B says ``I do not know'' everywhere:
+high loss.
+
+In the code:
+
+\begin{center}
+\code{loss\_function = DiceLoss(to\_onehot\_y=True, softmax=True)}
+\end{center}
+
+\begin{itemize}
+\item \code{softmax=True}: the outputs of the network are scores; the loss turns them into probabilities itself.
+\item \code{to\_onehot\_y=True}: our label is one image with 0 and 1; the loss rewrites it as two images, one
+per class, to match the two output channels.
+\item The loss is computed for each class and averaged.
+\end{itemize}
+
+\textbf{Cross-entropy}, the other common loss, looks at each pixel separately: it is small when the network
+gives a high probability to the correct class of that pixel. It does not know about overlap, so with small
+structures it is dominated by the background. \code{DiceCELoss} is the sum of the two (used in notebook 04).
+
+\remember{Dice measures overlap, from 0 to 1, and is not fooled by a large background. The Dice loss is the
+same formula on probabilities, so that it changes smoothly. The loss is for the training, the metric is for us.}
 
 % ---------------------------------------------------------------------------
 \section{Training}
@@ -839,7 +896,9 @@ Container, image (Docker) & 10 & an app packed with everything it needs \\
 Convolution & 4.2 & a small filter sliding over the image \\
 DataLoader & 3.5 & groups the samples in batches \\
 Dataset & 3.5 & gives sample number $i$ \\
+Cross-entropy & 5.3 & a loss that judges each pixel separately \\
 Dice & 5.1 & overlap between two masks, from 0 to 1 \\
+Dice loss & 5.3 & the Dice formula on probabilities; what the training reduces \\
 DICOM & 2 & clinical image format, one file per slice \\
 Encoder, decoder & 4.3 & the two halves of the U-Net \\
 Epoch & 6.3 & one pass over the training images \\
