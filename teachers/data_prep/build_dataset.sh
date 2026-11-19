@@ -14,6 +14,7 @@ WORK=${1:?work folder for the temporary LUNA16 files}
 OUT=${2:?output dataset folder}
 SUBSETS=${3:-"0 1 2 3 4 5 6 7 8 9"}
 VOLUMES=${VOLUMES:-28}          # low-resolution 3D scans for notebook 05 (taken from the first subset)
+MASKS_DIR=${MASKS_DIR:-}        # folder with the 3D nodule masks of the radiologists (<seriesuid>.nii.gz); empty = disc masks
 CONNECTIONS=${CONNECTIONS:-16}  # parallel connections per download
 HERE="$(cd "$(dirname "$0")" && pwd)"
 mkdir -p "$WORK" "$OUT"
@@ -63,7 +64,7 @@ for k in $SUBSETS; do
   echo "=== subset $k: slices"
   python3 "$HERE/prepare_luna16_slices.py" --luna-dir "$WORK" --out "$OUT" --subsets "$k" --append --volumes "$VOLUMES"
   echo "=== subset $k: nodules"
-  python3 "$HERE/prepare_nodule_patches.py" --luna-dir "$WORK" --out "$OUT"
+  python3 "$HERE/prepare_nodule_patches.py" --luna-dir "$WORK" --out "$OUT" ${MASKS_DIR:+--masks-dir "$MASKS_DIR"}
   rm -rf "$WORK/subset$k"
   touch "$OUT/.subset$k.done"
 done

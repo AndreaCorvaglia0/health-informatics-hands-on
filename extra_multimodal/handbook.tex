@@ -171,7 +171,7 @@ fusion beats the best single source.}
 
 The images are real. They are the nodule patches of notebook 04, cut from the LUNA16 chest CT collection
 \cite{setio2017luna16}: $64 \times 64$ pixels around a nodule, with the mask of the nodule. For this module we
-keep one nodule per patient, the largest, so we have 601 patients.
+keep one nodule per patient, the largest, so we have 600 patients. The masks are the outlines drawn by the radiologists of the LIDC-IDRI project.
 
 \begin{center}
 \includegraphics[width=0.9\linewidth]{fusion_patches.png}
@@ -200,7 +200,7 @@ Column & Meaning & Origin \\
 nodule, plus age, performance status and smoking. Nothing here has a medical meaning: the point is the method.
 The notebook shows you the formula at the end.}
 
-In the table the fraction of patients alive after one year is 0.697.
+In the table the fraction of patients alive after one year is 0.697, and it falls with the performance status: 0.810 for status 0, 0.637 for status 1 and 0.444 for status 2.
 
 \remember{Real images, invented table, invented outcome. Whatever you find is a statement about the method, not
 about lung cancer.}
@@ -215,7 +215,7 @@ about lung cancer.}
 \usedin{notebook STEP 3--4}
 
 \textbf{The split.} The model learns on the \term{training} patients and is judged on the \term{test} patients,
-whom it has never seen. We use 420 for training and 181 for testing, with the same fraction of alive patients in
+whom it has never seen. We use 420 for training and 180 for testing, with the same fraction of alive patients in
 both (\code{stratify=y}).
 
 \begin{center}
@@ -225,10 +225,10 @@ both (\code{stratify=y}).
 \draw (0,0) rectangle (15,0.8);
 \draw (10.5,0) -- (10.5,0.8);
 \node[font=\footnotesize\sffamily] at (5.25,0.4) {420 training patients: the model and the scaler learn here};
-\node[font=\footnotesize\sffamily] at (12.75,0.4) {181 test: only to judge};
+\node[font=\footnotesize\sffamily] at (12.75,0.4) {180 test: only to judge};
 \end{tikzpicture}
 
-{\small The 601 patients, split once. Every model of the module uses this split.}
+{\small The 600 patients, split once. Every model of the module uses this split.}
 \end{center}
 
 \textbf{The AUC.} The model gives each test patient a probability of being alive. The \term{AUC} is the
@@ -240,7 +240,7 @@ first year; three lines are enough:
 \item it does not depend on a threshold, so it compares models that have different probabilities.
 \end{itemize}
 
-\textbf{One test set for all.} Every model of the module is judged on the same 181 test patients, through the
+\textbf{One test set for all.} Every model of the module is judged on the same 180 test patients, through the
 same function \code{test\_auc}. If each model had its own test patients, a difference could come from the patients
 and not from the model.
 
@@ -307,9 +307,11 @@ maximum, which is the table \code{X\_measurements}.
 \includegraphics[width=\linewidth]{fusion_measure.png}
 \end{minipage}\hfill
 \begin{minipage}[c]{0.60\linewidth}
-Patient 0, the example of STEP 5. The mask has an area of 30.30 mm$^2$, which gives a diameter of 6.21 mm; the
-metadata of the dataset says 6.44 mm. Inside the mask the mean is $-230.5$ HU, the standard deviation 179.1 HU
-and the maximum 28 HU.
+Patient 0, the example of STEP 5. The mask has an area of 23.7 mm$^2$, which gives a diameter of 5.49 mm; the
+metadata of the dataset says 6.44 mm. The two need not agree: the dataset value is an average over several
+radiologists and slices, our value is one outline on one slice. Inside the mask the mean is $-163.5$ HU, the
+standard deviation 140.1 HU and the maximum 28 HU. A few patches hold two nodules: the mask has both, and our
+area sums them.
 \end{minipage}
 \end{center}
 
@@ -387,7 +389,7 @@ nodule, so the embedding must contain them, even if nobody asked the network for
 \item \textbf{It ignores what does not matter:} where the nodule sits in the patch, the noise of the scanner, the
 vessels around. Be careful, because what a network was trained to ignore may be what you need. Networks trained
 on photographs learn that an object is the same object when it is larger or smaller in the picture. For a
-nodule the size is the message. This is a likely reason why measurements beat embeddings here, not a proven fact.
+nodule the size is the message. This is a likely reason why, on the whole patch, the measurements beat the embeddings here, not a proven fact.
 \item \textbf{It puts similar cases close together.} The nearest neighbours of a nodule are nodules that look
 like it.
 \item \textbf{It is easy to read.} A simple model on top, such as a logistic regression, is enough. With few
@@ -412,7 +414,7 @@ diameter? We do it in section 5.6: it is the column $R^2$.
 \begin{center}
 \includegraphics[width=0.32\linewidth]{fusion_pca.png}
 
-{\small The first two PCA components of the 601 patches. The colour is the diameter of the nodule. The colours
+{\small The first two PCA components of the 600 patches. The colour is the diameter of the nodule. The colours
 are mixed: the two components know only a little about the size.}
 \end{center}
 
@@ -564,13 +566,13 @@ clinical data (early fusion).
 \toprule
 Image numbers & Size & $R^2$ diameter & AUC alone & AUC with clinical \\
 \midrule
-Clinical data only & 4 & & 0.691 & \\
-Five measurements from the mask & 5 & & 0.766 & 0.851 \\
-DenseNet121 ImageNet, whole patch & 1024 & 0.385 & 0.724 & 0.796 \\
-DenseNet121 ImageNet, crop on the nodule & 1024 & 0.587 & 0.741 & 0.843 \\
-DINOv2 ViT-S/14 CLS, whole patch & 384 & 0.413 & 0.674 & 0.753 \\
-DINOv2 ViT-S/14 mean of patches, whole patch & 384 & 0.384 & 0.681 & 0.754 \\
-DINOv2 ViT-S/14 CLS, crop on the nodule & 384 & 0.595 & 0.763 & 0.852 \\
+Clinical data only & 4 & & 0.757 & \\
+Five measurements from the mask & 5 & & 0.740 & 0.867 \\
+DenseNet121 ImageNet, whole patch & 1024 & 0.278 & 0.616 & 0.786 \\
+DenseNet121 ImageNet, crop on the nodule & 1024 & 0.570 & 0.779 & 0.867 \\
+DINOv2 ViT-S/14 CLS, whole patch & 384 & 0.361 & 0.569 & 0.752 \\
+DINOv2 ViT-S/14 mean of patches, whole patch & 384 & 0.393 & 0.615 & 0.775 \\
+DINOv2 ViT-S/14 CLS, crop on the nodule & 384 & 0.517 & 0.674 & 0.811 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -583,19 +585,24 @@ DINOv2 ViT-S/14 CLS, crop on the nodule & 384 & 0.595 & 0.763 & 0.852 \\
 
 What you can read in it:
 \begin{itemize}
-\item \textbf{Telling the network where to look matters more than which network.} With the crop on the nodule both
-networks improve, alone and with the clinical data. DINOv2 on the crop reaches the level of the five measurements.
-\item \textbf{Newer is not automatically better.} On the whole patch, DINOv2 is not better than the older
-DenseNet121.
-\item \textbf{CLS token or mean of the patch tokens:} no real difference here.
-\item \textbf{The probe agrees with the task.} The embeddings that predict the diameter better ($R^2$ about 0.6 with
-the crop, about 0.4 on the whole patch) are the ones that predict the outcome better. In our invented data the
-outcome depends on the size, so this is expected. What matters is how you use a probe: a cheap check, before the
-real task, that the embedding contains what you need.
+\item \textbf{Telling the network where to look is the big effect.} With the crop on the nodule both networks
+improve a lot. DenseNet121 goes from 0.62 to 0.78 alone and from 0.79 to 0.87 with the clinical data; DINOv2 goes
+from 0.57 to 0.67 and from 0.75 to 0.81. This is far larger than the noise. With the crop, the DenseNet121
+embedding does as well as the five measurements (0.78 against 0.74 alone, 0.87 against 0.87 with the clinical
+data).
+\item \textbf{Newer is not better.} DINOv2 is below DenseNet121 in every row, with and without the crop.
+\item \textbf{CLS token or mean of the patch tokens:} on the whole patch the mean does a little better (0.62
+against 0.57 alone). With 180 test patients this is at the edge of the noise.
+\item \textbf{The probe moves with the task.} $R^2$ for the diameter is about 0.3 to 0.4 on the whole patch and
+0.5 to 0.6 with the crop, and the crop is where the AUC rises. It is not a perfect ranking: DINOv2 with the crop has
+$R^2$ 0.52 and AUC 0.67, DenseNet121 with the crop 0.57 and 0.78. The outcome also depends on the density of the
+nodule, which this probe does not test. In our invented data the outcome depends on the size, so a link is
+expected. What matters is how you use a probe: a cheap check, before the real task, that the embedding contains
+what you need.
 \item \textbf{The crop uses the mask to find the centre.} In practice a detector, or a click of the radiologist,
 gives it.
-\item \textbf{One split, 181 test patients.} Differences of 0.02 or 0.03 are noise. The pattern ``the crop helps'' is
-the only one large enough to trust.
+\item \textbf{One split, 180 test patients.} Differences of 0.02 or 0.03 are noise. The pattern ``the crop helps''
+is the one clearly larger than the noise.
 \end{itemize}
 
 These experiments are in the challenges at the end of the notebook. The complete code is in the file
@@ -717,22 +724,24 @@ the best in general: it depends on the data you have.}
 \begin{center}
 \includegraphics[width=0.62\linewidth]{fusion_results.png}
 
-{\small Test AUC of the seven models (one split, 181 test patients). Grey: one source. Green: fusion.}
+{\small Test AUC of the seven models (one split, 180 test patients). Grey: one source. Green: fusion.}
 \end{center}
 
-Early fusion (0.851) and late fusion (0.844) beat both baselines, clinical only (0.691) and image measurements
-only (0.766). Each source knows something the other does not: the table knows age, smoking and performance
-status, the measurements know size and density. Early fusion with embeddings (0.796) is better than the clinical
-data alone but worse than fusion with the measurements, as the embeddings are the weaker image model (0.724). The
-intermediate network (0.686) is no better than the clinical data alone: with 420 patients it has too little data
-to learn the image numbers from scratch. Chapter 5 showed that a crop on the nodule closes most of the gap
-between embeddings and measurements.
+The two single sources are about equal: the clinical data reach 0.757 and the image measurements 0.740, and the
+difference is noise. Early fusion (0.867) and late fusion (0.861) clearly beat both, and they are equal to each
+other. Each source knows something the other does not: the table knows age, smoking and performance status, the
+measurements know size and density. The embeddings of the whole patch are the weakest source (0.616), below the
+clinical data and below the measurements. Early fusion with embeddings (0.786) is above the clinical data alone
+but well below fusion with the measurements (0.867). The intermediate network (0.739) is no better than a single
+source and well below early fusion: with 420 patients it has too little data to learn the image numbers from
+scratch. Chapter 5 showed that a crop on the nodule lifts the DenseNet121 embedding to the level of the
+measurements (0.779 alone, 0.867 with the clinical data).
 
 \textbf{What to be careful about.}
 \begin{itemize}
 \item \textbf{The data are invented.} The formula was built so that both sources matter, so fusion is almost
 guaranteed to help. On real data it often helps less: the image and the table frequently tell the same thing.
-\item \textbf{The test set is small.} With 181 patients a difference of 0.02 or 0.03 between two models is noise.
+\item \textbf{The test set is small.} With 180 patients a difference of 0.02 or 0.03 between two models is noise.
 Change \code{random\_state} and watch the ranking move.
 \item \textbf{Fit everything on the training patients.} The scaler and the PCA learn from data, so they are fitted
 on the training patients only, and then applied to the test patients.
@@ -742,7 +751,7 @@ studies use survival analysis \cite{clark2003survival}.
 \end{itemize}
 
 \remember{Compare every fusion with the best single source, on the same test patients, and do not read
-differences smaller than 0.03 on 181 patients.}
+differences smaller than 0.03 on 180 patients.}
 
 \further{
 \item Clark et al.\ \cite{clark2003survival}: the basic concepts of survival analysis, including censoring.

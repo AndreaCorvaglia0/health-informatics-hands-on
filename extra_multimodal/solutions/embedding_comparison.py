@@ -2,7 +2,7 @@
 
 What it does
 ------------
-For the largest nodule of each patient (601 patients, 64 x 64 CT patches) it
+For the largest nodule of each patient (600 patients, 64 x 64 CT patches) it
   1. builds the invented clinical table of the notebook (same formula, same seed);
   2. cuts a 32 x 32 crop around the centre of the mask of each nodule;
   3. computes embeddings with two pretrained networks, on the whole patch and on the crop:

@@ -1017,9 +1017,10 @@ around the nodule.
 {\small Six patches of $64 \times 64$ pixels with the mask of the nodule (red) and its diameter.}
 \end{center}
 
-In our dataset the masks are discs: we know the centre and the diameter of each nodule, measured by
-radiologists, but not its outline \cite{setio2017luna16}. Real nodules are not perfect circles, so no model can reach a Dice of 1
-against these masks.
+In our dataset the centre and the diameter of each nodule come from LUNA16 \cite{setio2017luna16}, and the masks from
+the outlines drawn by the radiologists of LIDC-IDRI \cite{armato2011lidc}: up to four for each nodule, combined into one
+mask. Radiologists do not agree exactly on where a nodule ends, so the mask is a good reference and not a perfect
+truth: no model can be expected to reach a Dice of 1 against it.
 
 \subsection{How to run an experiment}
 

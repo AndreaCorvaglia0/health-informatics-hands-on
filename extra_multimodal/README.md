@@ -15,7 +15,7 @@ Internet must be on: STEP 8 downloads a pretrained network.
 
 ## What is inside
 
-One nodule per patient (601 patients). The question: does a model that sees both the image and the clinical
+One nodule per patient (600 patients, 420 for training and 180 for testing). The masks are the outlines drawn by the LIDC-IDRI radiologists. The question: does a model that sees both the image and the clinical
 data predict "alive after one year" better than a model that sees only one?
 
 | Step | Topic |
@@ -36,16 +36,19 @@ module has a medical meaning: it teaches the method.
 
 | Model | AUC |
 |---|---|
-| clinical data only | 0.69 |
-| image measurements only | 0.77 |
-| early fusion | 0.85 |
-| late fusion | 0.84 |
-| embeddings only | 0.72 |
-| early fusion with embeddings | 0.80 |
-| intermediate fusion | 0.69 |
+| clinical data only | 0.76 |
+| image measurements only | 0.74 |
+| early fusion | 0.87 |
+| late fusion | 0.86 |
+| embeddings only | 0.62 |
+| early fusion with embeddings | 0.79 |
+| intermediate fusion | 0.74 |
 
-The intermediate fusion network is no better than the clinical data alone: 420 training patients are too few to
-learn the image branch from scratch. The notebook says so. It is a useful result to discuss.
+The two single sources are about equal (0.76 and 0.74: the difference is noise). Early and late fusion are clearly
+better than both, and equal to each other. The embeddings of the whole patch are the weakest source. The
+intermediate fusion network is no better than a single source and well below early fusion: 420 training patients
+are too few to learn the image branch from scratch. The notebook says so. It is a useful result to discuss. With
+180 test patients, differences of 0.02 or 0.03 are noise.
 
 ## Two more challenges on embeddings
 
@@ -56,10 +59,13 @@ what is compared.
 
 | Embedding | AUC alone | AUC with clinical data |
 |---|---|---|
-| DenseNet121, whole patch | 0.72 | 0.80 |
-| DenseNet121, crop | 0.74 | 0.84 |
-| DINOv2, whole patch | 0.67 | 0.75 |
-| DINOv2, crop | 0.76 | 0.85 |
+| DenseNet121, whole patch | 0.62 | 0.79 |
+| DenseNet121, crop | 0.78 | 0.87 |
+| DINOv2, whole patch | 0.57 | 0.75 |
+| DINOv2, crop | 0.67 | 0.81 |
+
+Telling the network where to look (the crop) is the big effect, far larger than the noise. With the crop, DenseNet121
+does as well as the five measurements. DINOv2 is below DenseNet121 in every row.
 
 The script `solutions/embedding_comparison.py` gives the same numbers outside the notebook, with the R2 for the
 diameter and a DINOv2 variant (mean of the patches). Run it with

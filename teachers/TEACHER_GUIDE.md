@@ -70,7 +70,7 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
 
 ## Before the course
 
-1. **Put the dataset on Kaggle.** The ready zip is `luna16-lung-slices.zip` (396 MB; 888 patients, 1186
+1. **Put the dataset on Kaggle.** The ready zip is `luna16-lung-slices.zip` (396 MB; 888 patients, 1184
    nodules, 28 low-resolution scans): upload it as a Kaggle dataset named `luna16-lung-slices`
    (`teachers/data_prep/README.md`). How it
    was built from LUNA16, and why, is in `teachers/data_prep/DATASET.md`; `build_dataset.sh` rebuilds it.
@@ -124,7 +124,7 @@ Notebook 04
 - Comparing two runs that differ in more than one thing.
 - Calling a difference smaller than the noise (STEP 8) an improvement.
 - Forgetting to create a new model before an experiment: the training continues from the previous one.
-- Reading the Dice as if the masks were real outlines: they are discs (see below).
+- Reading the nodule Dice as if the masks were a perfect truth: radiologists disagree on borders (see below).
 
 ## For who is ahead, in order
 
@@ -139,28 +139,27 @@ Notebook 04
 
 ## About the nodule data
 
-LUNA16 gives the centre and the diameter of each nodule, not its outline. The masks of notebook 04 are discs
-of the annotated diameter, drawn on the slice through the centre of the nodule, in a 64 x 64 patch where the
-nodule is shifted at random from the centre. The notebook says so to the students and asks them to keep it in
-mind: part of the "error" is the mask.
+The nodule masks of notebook 04 are the outlines drawn by the radiologists of LIDC-IDRI (up to four for each
+nodule, combined into one mask; how they were combined is not documented). Each mask is cut from the slice
+through the annotated centre of the nodule, in a 64 x 64 patch where the nodule is shifted at random from the
+centre. A few patches (55 of 1184) contain a second nodule: it is in the mask too.
 
-If your colleague prepares the radiologist outlines from LIDC-IDRI, put them in the same layout
-(`teachers/data_prep/README.md`): the notebook does not change, and the discussion on how much radiologists
-disagree becomes possible.
+Radiologists do not agree exactly on the border of a nodule. The notebook says so to the students: the mask
+is a good reference, not a perfect truth, and the agreement between experts is the real ceiling for a model.
 
 Every patch contains a nodule. Patches without nodules, and detection in a whole scan, are only mentioned in
 the questions at the end.
 
 ## What was tested
 
-Everything was run on a computer without GPU, on the full dataset (888 patients, 1186 nodules).
+Everything was run on a computer without GPU, on the full dataset (888 patients, 1184 nodules).
 
 | | Result |
 |---|---|
 | Notebooks 00, 01, 02 (solutions) | run without errors |
 | Notebook 03 (solution) | 16 minutes on CPU (about 40 seconds per epoch). Validation Dice 0.93 after the first epoch, 0.989 at the best epoch. Test: mean Dice 0.978 on 134 patients, lowest 0.17 |
 | Notebook 03, worst test cases | the three lowest are all errors of the reference mask (air around the body labelled as lung, or one lung missing): the model is right. This is the discussion of STEP 12 |
-| Notebook 04 (solution) | 34 minutes on CPU for six trainings. Baseline validation Dice 0.843, second seed 0.835 (noise 0.008), DiceCE loss 0.828, augmentation 0.858, test 0.853 on 170 nodules. The reference table is also in the solution notebook |
+| Notebook 04 (solution) | 34 minutes on CPU for six trainings (masks of the radiologists). Baseline validation Dice 0.833, second seed 0.827 (noise 0.006), DiceCE loss 0.821, augmentation 0.866, final test Dice 0.852 on 178 nodules |
 | Notebook 05 (solution) | run on a smaller sample only (6 training scans: validation Dice 0.94 after 30 epochs) |
 | Web app | the completed app runs with the trained model: upload, three pictures, area, Dice. The student `app.py` runs as it is, with nothing filled in |
 | Handbook | compiles with pdflatex, 28 pages; figures made from the full dataset and the spare model |
@@ -173,8 +172,8 @@ The extra module (`extra_multimodal/`): solution notebook run on CPU in about on
 Not tested: a GPU, Kaggle itself, the deploy on Streamlit Community Cloud, the Docker build, the GitHub steps.
 
 **About the nodule experiments.** The gains are small: the best of the guided experiments improves the
-baseline by 0.015. They are readable because the noise between two runs is about 0.01, but do not promise
-large improvements. The disc masks set a ceiling that no model can pass.
+baseline by 0.03. They are readable because the noise between two runs is about 0.01, but do not promise
+large improvements.
 
 ## Changing the material
 
