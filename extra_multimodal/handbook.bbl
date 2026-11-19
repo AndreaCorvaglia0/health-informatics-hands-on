@@ -1,0 +1,252 @@
+\begin{thebibliography}{10}
+
+\bibitem{acosta2022multimodal}
+Julián~N. Acosta, Guido~J. Falcone, Pranav Rajpurkar, and Eric~J. Topol.
+\newblock {Multimodal biomedical AI}.
+\newblock {\em Nature Medicine}, 28(9):1773--1784, 2022.
+\newblock doi:10.1038/s41591-022-01981-2.
+
+\bibitem{lipkova2022multimodal}
+Jana Lipkova, Richard~J. Chen, Bowen Chen, et~al.
+\newblock {Artificial intelligence for multimodal data integration in
+  oncology}.
+\newblock {\em Cancer Cell}, 40(10):1095--1110, 2022.
+\newblock doi:10.1016/j.ccell.2022.09.012.
+
+\bibitem{baltrusaitis2019multimodal}
+Tadas Baltrusaitis, Chaitanya Ahuja, and Louis-Philippe Morency.
+\newblock {Multimodal Machine Learning: A Survey and Taxonomy}.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  41(2):423--443, 2019.
+\newblock doi:10.1109/TPAMI.2018.2798607.
+
+\bibitem{setio2017luna16}
+Arnaud Arindra~Adiyoso Setio, Alberto Traverso, Thomas de~Bel, et~al.
+\newblock {Validation, comparison, and combination of algorithms for automatic
+  detection of pulmonary nodules in computed tomography images: The LUNA16
+  challenge}.
+\newblock {\em Medical Image Analysis}, 42:1--13, 2017.
+\newblock doi:10.1016/j.media.2017.06.015.
+
+\bibitem{monaidocs}
+{MONAI Consortium}.
+\newblock {MONAI documentation and tutorials}.
+\newblock \url{https://docs.monai.io} and
+  \url{https://github.com/Project-MONAI/tutorials}.
+
+\bibitem{kapoor2023leakage}
+Sayash Kapoor and Arvind Narayanan.
+\newblock {Leakage and the reproducibility crisis in machine-learning-based
+  science}.
+\newblock {\em Patterns}, 4(9):100804, 2023.
+\newblock doi:10.1016/j.patter.2023.100804.
+
+\bibitem{gillies2016radiomics}
+Robert~J. Gillies, Paul~E. Kinahan, and Hedvig Hricak.
+\newblock {Radiomics: Images Are More than Pictures, They Are Data}.
+\newblock {\em Radiology}, 278(2):563--577, 2016.
+\newblock doi:10.1148/radiol.2015151169.
+
+\bibitem{lambin2012radiomics}
+Philippe Lambin, Emmanuel Rios-Velazquez, Ralph Leijenaar, et~al.
+\newblock {Radiomics: Extracting more information from medical images using
+  advanced feature analysis}.
+\newblock {\em European Journal of Cancer}, 48(4):441--446, 2012.
+\newblock doi:10.1016/j.ejca.2011.11.036.
+
+\bibitem{vangriethuysen2017pyradiomics}
+Joost~J.M. van Griethuysen, Andriy Fedorov, Chintan Parmar, et~al.
+\newblock {Computational Radiomics System to Decode the Radiographic
+  Phenotype}.
+\newblock {\em Cancer Research}, 77(21):e104--e107, 2017.
+\newblock doi:10.1158/0008-5472.CAN-17-0339.
+
+\bibitem{zwanenburg2020ibsi}
+Alex Zwanenburg, Martin Vallières, Mahmoud~A. Abdalah, et~al.
+\newblock {The Image Biomarker Standardization Initiative: Standardized
+  Quantitative Radiomics for High-Throughput Image-based Phenotyping}.
+\newblock {\em Radiology}, 295(2):328--338, 2020.
+\newblock doi:10.1148/radiol.2020191145.
+
+\bibitem{pyradiomicsdocs}
+{PyRadiomics}.
+\newblock {PyRadiomics documentation}.
+\newblock \url{https://pyradiomics.readthedocs.io}.
+
+\bibitem{bengio2013representation}
+Y.~Bengio, A.~Courville, and P.~Vincent.
+\newblock {Representation Learning: A Review and New Perspectives}.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  35(8):1798--1828, 2013.
+\newblock doi:10.1109/TPAMI.2013.50.
+
+\bibitem{raghu2019transfusion}
+Maithra Raghu, Chiyuan Zhang, Jon Kleinberg, and Samy Bengio.
+\newblock {Transfusion: Understanding Transfer Learning for Medical Imaging}.
+\newblock In {\em Advances in Neural Information Processing Systems (NeurIPS)},
+  2019.
+\newblock arXiv:1902.07208.
+
+\bibitem{mei2022radimagenet}
+Xueyan Mei, Zelong Liu, Philip~M. Robson, et~al.
+\newblock {RadImageNet: An Open Radiologic Deep Learning Research Dataset for
+  Effective Transfer Learning}.
+\newblock {\em Radiology: Artificial Intelligence}, 4(5):e210315, 2022.
+\newblock doi:10.1148/ryai.210315.
+
+\bibitem{deng2009imagenet}
+Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li~Fei-Fei.
+\newblock {ImageNet: A large-scale hierarchical image database}.
+\newblock In {\em IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, pages 248--255, 2009.
+\newblock doi:10.1109/CVPR.2009.5206848.
+
+\bibitem{he2016resnet}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock {Deep Residual Learning for Image Recognition}.
+\newblock In {\em IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, pages 770--778, 2016.
+\newblock doi:10.1109/CVPR.2016.90.
+
+\bibitem{huang2017densenet}
+Gao Huang, Zhuang Liu, Laurens Van Der~Maaten, and Kilian~Q. Weinberger.
+\newblock {Densely Connected Convolutional Networks}.
+\newblock In {\em IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, pages 2261--2269, 2017.
+\newblock doi:10.1109/CVPR.2017.243.
+
+\bibitem{kornblith2019transfer}
+Simon Kornblith, Jonathon Shlens, and Quoc~V. Le.
+\newblock {Do Better ImageNet Models Transfer Better?}
+\newblock In {\em IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pages 2656--2666, 2019.
+\newblock doi:10.1109/CVPR.2019.00277.
+
+\bibitem{chen2019med3d}
+Sihong Chen, Kai Ma, and Yefeng Zheng.
+\newblock {Med3D: Transfer Learning for 3D Medical Image Analysis}.
+\newblock arXiv:1904.00625, 2019.
+
+\bibitem{chen2020simclr}
+Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton.
+\newblock {A Simple Framework for Contrastive Learning of Visual
+  Representations}.
+\newblock In {\em International Conference on Machine Learning (ICML)}, 2020.
+\newblock arXiv:2002.05709.
+
+\bibitem{caron2021dino}
+Mathilde Caron, Hugo Touvron, Ishan Misra, et~al.
+\newblock {Emerging Properties in Self-Supervised Vision Transformers}.
+\newblock In {\em IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages 9630--9640, 2021.
+\newblock doi:10.1109/ICCV48922.2021.00951.
+
+\bibitem{dosovitskiy2021vit}
+Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, et~al.
+\newblock {An Image is Worth 16x16 Words: Transformers for Image Recognition at
+  Scale}.
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2021.
+\newblock arXiv:2010.11929.
+
+\bibitem{oquab2023dinov2}
+Maxime Oquab, Timothée Darcet, Théo Moutakanni, et~al.
+\newblock {DINOv2: Learning Robust Visual Features without Supervision}.
+\newblock In {\em Transactions on Machine Learning Research (TMLR)}, 2024.
+\newblock arXiv:2304.07193.
+
+\bibitem{he2022mae}
+Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollar, and Ross
+  Girshick.
+\newblock {Masked Autoencoders Are Scalable Vision Learners}.
+\newblock In {\em IEEE/CVF Conference on Computer Vision and Pattern
+  Recognition (CVPR)}, pages 15979--15988, 2022.
+\newblock doi:10.1109/CVPR52688.2022.01553.
+
+\bibitem{azizi2021selfsup}
+Shekoofeh Azizi, Basil Mustafa, Fiona Ryan, et~al.
+\newblock {Big Self-Supervised Models Advance Medical Image Classification}.
+\newblock In {\em IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages 3458--3468, 2021.
+\newblock doi:10.1109/ICCV48922.2021.00346.
+
+\bibitem{perezgarcia2025raddino}
+Fernando Pérez-García, Harshita Sharma, Sam Bond-Taylor, et~al.
+\newblock {Exploring scalable medical image encoders beyond text supervision}.
+\newblock {\em Nature Machine Intelligence}, 7(1):119--130, 2025.
+\newblock doi:10.1038/s42256-024-00965-w.
+
+\bibitem{pai2024foundation}
+Suraj Pai, Dennis Bontempi, Ibrahim Hadzic, et~al.
+\newblock {Foundation model for cancer imaging biomarkers}.
+\newblock {\em Nature Machine Intelligence}, 6(3):354--367, 2024.
+\newblock doi:10.1038/s42256-024-00807-9.
+
+\bibitem{zhou2023foundation}
+Yukun Zhou, Mark~A. Chia, Siegfried~K. Wagner, et~al.
+\newblock {A foundation model for generalizable disease detection from retinal
+  images}.
+\newblock {\em Nature}, 622(7981):156--163, 2023.
+\newblock doi:10.1038/s41586-023-06555-x.
+
+\bibitem{radford2021clip}
+Alec Radford, Jong~Wook Kim, Chris Hallacy, et~al.
+\newblock {Learning Transferable Visual Models From Natural Language
+  Supervision}.
+\newblock In {\em International Conference on Machine Learning (ICML)}, 2021.
+\newblock arXiv:2103.00020.
+
+\bibitem{zhang2023biomedclip}
+Sheng Zhang, Yanbo Xu, Naoto Usuyama, et~al.
+\newblock {BiomedCLIP: a multimodal biomedical foundation model pretrained from
+  fifteen million scientific image-text pairs}.
+\newblock arXiv:2303.00915, 2023.
+
+\bibitem{huang2020fusion}
+Shih-Cheng Huang, Anuj Pareek, Saeed Seyyedi, Imon Banerjee, and Matthew~P.
+  Lungren.
+\newblock {Fusion of medical imaging and electronic health records using deep
+  learning: a systematic review and implementation guidelines}.
+\newblock {\em npj Digital Medicine}, 3(1):136, 2020.
+\newblock doi:10.1038/s41746-020-00341-z.
+
+\bibitem{cui2023fusionreview}
+Can Cui, Haichun Yang, Yaohong Wang, et~al.
+\newblock {Deep multimodal fusion of image and non-image data in disease
+  diagnosis and prognosis: a review}.
+\newblock {\em Progress in Biomedical Engineering}, 5(2):022001, 2023.
+\newblock doi:10.1088/2516-1091/acc2fe.
+
+\bibitem{mohsen2022fusion}
+Farida Mohsen, Hazrat Ali, Nady El~Hajj, and Zubair Shah.
+\newblock {Artificial intelligence-based methods for fusion of electronic
+  health records and imaging data}.
+\newblock {\em Scientific Reports}, 12(1):17981, 2022.
+\newblock doi:10.1038/s41598-022-22514-4.
+
+\bibitem{clark2003survival}
+T~G Clark, M~J Bradburn, S~B Love, and D~G Altman.
+\newblock {Survival Analysis Part I: Basic concepts and first analyses}.
+\newblock {\em British Journal of Cancer}, 89(2):232--238, 2003.
+\newblock doi:10.1038/sj.bjc.6601118.
+
+\bibitem{gao2021lungfusion}
+Riqiang Gao, Yucheng Tang, Mirza~S. Khan, et~al.
+\newblock {Cancer Risk Estimation Combining Lung Screening CT with Clinical
+  Data Elements}.
+\newblock {\em Radiology: Artificial Intelligence}, 3(6):e210032, 2021.
+\newblock doi:10.1148/ryai.2021210032.
+
+\bibitem{liang2024foundations}
+Paul~Pu Liang, Amir Zadeh, and Louis-Philippe Morency.
+\newblock {Foundations \& Trends in Multimodal Machine Learning: Principles,
+  Challenges, and Open Questions}.
+\newblock {\em ACM Computing Surveys}, 56(10):1--42, 2024.
+\newblock doi:10.1145/3656580.
+
+\bibitem{cmummml}
+Louis-Philippe Morency and Paul~Pu Liang.
+\newblock {Multimodal Machine Learning (CMU 11-777), course material}.
+\newblock \url{https://cmu-mmml.github.io/}.
+
+\end{thebibliography}

@@ -1,0 +1,328 @@
+\begin{thebibliography}{10}
+
+\bibitem{gulshan2016retina}
+Varun Gulshan, Lily Peng, Marc Coram, et~al.
+\newblock {Development and Validation of a Deep Learning Algorithm for
+  Detection of Diabetic Retinopathy in Retinal Fundus Photographs}.
+\newblock {\em JAMA}, 316(22):2402, 2016.
+\newblock doi:10.1001/jama.2016.17216.
+
+\bibitem{esteva2017skin}
+Andre Esteva, Brett Kuprel, Roberto~A. Novoa, et~al.
+\newblock {Dermatologist-level classification of skin cancer with deep neural
+  networks}.
+\newblock {\em Nature}, 542(7639):115--118, 2017.
+\newblock doi:10.1038/nature21056.
+
+\bibitem{ardila2019lung}
+Diego Ardila, Atilla~P. Kiraly, Sujeeth Bharadwaj, et~al.
+\newblock {End-to-end lung cancer screening with three-dimensional deep
+  learning on low-dose chest computed tomography}.
+\newblock {\em Nature Medicine}, 25(6):954--961, 2019.
+\newblock doi:10.1038/s41591-019-0447-x.
+
+\bibitem{mckinney2020breast}
+Scott~Mayer McKinney, Marcin Sieniek, Varun Godbole, et~al.
+\newblock {International evaluation of an AI system for breast cancer
+  screening}.
+\newblock {\em Nature}, 577(7788):89--94, 2020.
+\newblock doi:10.1038/s41586-019-1799-6.
+
+\bibitem{wasserthal2023totalseg}
+Jakob Wasserthal, Hanns-Christian Breit, Manfred~T. Meyer, et~al.
+\newblock {TotalSegmentator: Robust Segmentation of 104 Anatomic Structures in
+  CT Images}.
+\newblock {\em Radiology: Artificial Intelligence}, 5(5):e230024, 2023.
+\newblock doi:10.1148/ryai.230024.
+
+\bibitem{fdalist}
+{U.S. Food and Drug Administration}.
+\newblock {Artificial Intelligence-Enabled Medical Devices}.
+\newblock
+  \url{https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-enabled-medical-devices}.
+\newblock List updated periodically.
+
+\bibitem{willemink2020data}
+Martin~J. Willemink, Wojciech~A. Koszek, Cailin Hardell, et~al.
+\newblock {Preparing Medical Imaging Data for Machine Learning}.
+\newblock {\em Radiology}, 295(1):4--15, 2020.
+\newblock doi:10.1148/radiol.2020192224.
+
+\bibitem{zech2018generalization}
+John~R. Zech, Marcus~A. Badgeley, Manway Liu, Anthony~B. Costa, Joseph~J.
+  Titano, and Eric~Karl Oermann.
+\newblock {Variable generalization performance of a deep learning model to
+  detect pneumonia in chest radiographs: A cross-sectional study}.
+\newblock {\em PLOS Medicine}, 15(11):e1002683, 2018.
+\newblock doi:10.1371/journal.pmed.1002683.
+
+\bibitem{litjens2017survey}
+Geert Litjens, Thijs Kooi, Babak~Ehteshami Bejnordi, et~al.
+\newblock {A survey on deep learning in medical image analysis}.
+\newblock {\em Medical Image Analysis}, 42:60--88, 2017.
+\newblock doi:10.1016/j.media.2017.07.005.
+
+\bibitem{rajpurkar2022aihealth}
+Pranav Rajpurkar, Emma Chen, Oishi Banerjee, and Eric~J. Topol.
+\newblock {AI in health and medicine}.
+\newblock {\em Nature Medicine}, 28(1):31--38, 2022.
+\newblock doi:10.1038/s41591-021-01614-0.
+
+\bibitem{hounsfield1973}
+G.~N. Hounsfield.
+\newblock {Computerized transverse axial scanning (tomography): Part 1.
+  Description of system}.
+\newblock {\em The British Journal of Radiology}, 46(552):1016--1022, 1973.
+\newblock doi:10.1259/0007-1285-46-552-1016.
+
+\bibitem{setio2017luna16}
+Arnaud Arindra~Adiyoso Setio, Alberto Traverso, Thomas de~Bel, et~al.
+\newblock {Validation, comparison, and combination of algorithms for automatic
+  detection of pulmonary nodules in computed tomography images: The LUNA16
+  challenge}.
+\newblock {\em Medical Image Analysis}, 42:1--13, 2017.
+\newblock doi:10.1016/j.media.2017.06.015.
+
+\bibitem{armato2011lidc}
+Samuel~G. Armato, Geoffrey McLennan, Luc Bidaut, et~al.
+\newblock {The Lung Image Database Consortium (LIDC) and Image Database
+  Resource Initiative (IDRI): A Completed Reference Database of Lung Nodules on
+  CT Scans}.
+\newblock {\em Medical Physics}, 38(2):915--931, 2011.
+\newblock doi:10.1118/1.3528204.
+
+\bibitem{radiopaediahu}
+{Radiopaedia}.
+\newblock {Hounsfield unit; Windowing (CT)}.
+\newblock \url{https://radiopaedia.org/articles/hounsfield-unit} and
+  \url{https://radiopaedia.org/articles/windowing-ct}.
+
+\bibitem{hofmanninger2020lung}
+Johannes Hofmanninger, Forian Prayer, Jeanny Pan, Sebastian Röhrich, Helmut
+  Prosch, and Georg Langs.
+\newblock {Automatic lung segmentation in routine imaging is primarily a data
+  diversity problem, not a methodology problem}.
+\newblock {\em European Radiology Experimental}, 4(1):50, 2020.
+\newblock doi:10.1186/s41747-020-00173-2.
+
+\bibitem{larobina2014formats}
+Michele Larobina and Loredana Murino.
+\newblock {Medical Image File Formats}.
+\newblock {\em Journal of Digital Imaging}, 27(2):200--206, 2014.
+\newblock doi:10.1007/s10278-013-9657-9.
+
+\bibitem{li2016dcm2niix}
+Xiangrui Li, Paul~S. Morgan, John Ashburner, Jolinda Smith, and Christopher
+  Rorden.
+\newblock {The first step for neuroimaging data analysis: DICOM to NIfTI
+  conversion}.
+\newblock {\em Journal of Neuroscience Methods}, 264:47--56, 2016.
+\newblock doi:10.1016/j.jneumeth.2016.03.001.
+
+\bibitem{dicomstandard}
+{NEMA}.
+\newblock {The DICOM Standard (NEMA PS3 / ISO 12052)}.
+\newblock \url{https://www.dicomstandard.org/current}.
+\newblock National Electrical Manufacturers Association.
+
+\bibitem{nibabelcoords}
+{NiBabel}.
+\newblock {Coordinate systems and affines}.
+\newblock \url{https://nipy.org/nibabel/coordinate_systems.html}.
+
+\bibitem{paszke2019pytorch}
+Adam Paszke, Sam Gross, Francisco Massa, et~al.
+\newblock {PyTorch: An Imperative Style, High-Performance Deep Learning
+  Library}.
+\newblock In {\em Advances in Neural Information Processing Systems (NeurIPS)},
+  2019.
+\newblock arXiv:1912.01703.
+
+\bibitem{cardoso2022monai}
+M.~Jorge Cardoso, Wenqi Li, Richard Brown, et~al.
+\newblock {MONAI: An open-source framework for deep learning in healthcare}.
+\newblock arXiv:2211.02701, 2022.
+
+\bibitem{shorten2019augmentation}
+Connor Shorten and Taghi~M. Khoshgoftaar.
+\newblock {A survey on Image Data Augmentation for Deep Learning}.
+\newblock {\em Journal of Big Data}, 6(1):60, 2019.
+\newblock doi:10.1186/s40537-019-0197-0.
+
+\bibitem{kapoor2023leakage}
+Sayash Kapoor and Arvind Narayanan.
+\newblock {Leakage and the reproducibility crisis in machine-learning-based
+  science}.
+\newblock {\em Patterns}, 4(9):100804, 2023.
+\newblock doi:10.1016/j.patter.2023.100804.
+
+\bibitem{monaidocs}
+{MONAI Consortium}.
+\newblock {MONAI documentation and tutorials}.
+\newblock \url{https://docs.monai.io} and
+  \url{https://github.com/Project-MONAI/tutorials}.
+
+\bibitem{lecun2015deep}
+Yann LeCun, Yoshua Bengio, and Geoffrey Hinton.
+\newblock {Deep learning}.
+\newblock {\em Nature}, 521(7553):436--444, 2015.
+\newblock doi:10.1038/nature14539.
+
+\bibitem{ronneberger2015unet}
+Olaf Ronneberger, Philipp Fischer, and Thomas Brox.
+\newblock {U-Net: Convolutional Networks for Biomedical Image Segmentation}.
+\newblock In {\em Medical Image Computing and Computer-Assisted Intervention
+  (MICCAI)}, pages 234--241, 2015.
+\newblock doi:10.1007/978-3-319-24574-4\_28.
+
+\bibitem{goodfellow2016deep}
+Ian Goodfellow, Yoshua Bengio, and Aaron Courville.
+\newblock {\em {Deep Learning}}.
+\newblock MIT Press, 2016.
+\newblock Free online: \url{https://www.deeplearningbook.org}.
+
+\bibitem{prince2023udl}
+Simon J.~D. Prince.
+\newblock {\em {Understanding Deep Learning}}.
+\newblock MIT Press, 2023.
+\newblock Free online: \url{https://udlbook.github.io/udlbook/}.
+
+\bibitem{isensee2021nnunet}
+Fabian Isensee, Paul~F. Jaeger, Simon A.~A. Kohl, Jens Petersen, and Klaus~H.
+  Maier-Hein.
+\newblock {nnU-Net: a self-configuring method for deep learning-based
+  biomedical image segmentation}.
+\newblock {\em Nature Methods}, 18(2):203--211, 2021.
+\newblock doi:10.1038/s41592-020-01008-z.
+
+\bibitem{isensee2024revisited}
+Fabian Isensee, Tassilo Wald, Constantin Ulrich, et~al.
+\newblock {nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical
+  Image Segmentation}.
+\newblock In {\em Medical Image Computing and Computer-Assisted Intervention
+  (MICCAI)}, pages 488--498, 2024.
+\newblock doi:10.1007/978-3-031-72114-4\_47.
+
+\bibitem{hatamizadeh2022unetr}
+Ali Hatamizadeh, Yucheng Tang, Vishwesh Nath, et~al.
+\newblock {UNETR: Transformers for 3D Medical Image Segmentation}.
+\newblock In {\em IEEE/CVF Winter Conference on Applications of Computer Vision
+  (WACV)}, pages 1748--1758, 2022.
+\newblock doi:10.1109/WACV51458.2022.00181.
+
+\bibitem{kirillov2023sam}
+Alexander Kirillov, Eric Mintun, Nikhila Ravi, et~al.
+\newblock {Segment Anything}.
+\newblock In {\em IEEE/CVF International Conference on Computer Vision (ICCV)},
+  pages 3992--4003, 2023.
+\newblock doi:10.1109/ICCV51070.2023.00371.
+
+\bibitem{ma2024medsam}
+Jun Ma, Yuting He, Feifei Li, Lin Han, Chenyu You, and Bo~Wang.
+\newblock {Segment anything in medical images}.
+\newblock {\em Nature Communications}, 15(1):654, 2024.
+\newblock doi:10.1038/s41467-024-44824-z.
+
+\bibitem{dice1945}
+Lee~R. Dice.
+\newblock {Measures of the Amount of Ecologic Association Between Species}.
+\newblock {\em Ecology}, 26(3):297--302, 1945.
+\newblock doi:10.2307/1932409.
+
+\bibitem{milletari2016vnet}
+Fausto Milletari, Nassir Navab, and Seyed-Ahmad Ahmadi.
+\newblock {V-Net: Fully Convolutional Neural Networks for Volumetric Medical
+  Image Segmentation}.
+\newblock In {\em International Conference on 3D Vision (3DV)}, pages 565--571,
+  2016.
+\newblock doi:10.1109/3DV.2016.79.
+
+\bibitem{sudre2017gdl}
+Carole~H. Sudre, Wenqi Li, Tom Vercauteren, Sebastien Ourselin, and
+  M.~Jorge~Cardoso.
+\newblock {Generalised Dice Overlap as a Deep Learning Loss Function for Highly
+  Unbalanced Segmentations}.
+\newblock In {\em Deep Learning in Medical Image Analysis (DLMIA), MICCAI
+  Workshop}, pages 240--248, 2017.
+\newblock doi:10.1007/978-3-319-67558-9\_28.
+
+\bibitem{maierhein2024metrics}
+Lena Maier-Hein, Annika Reinke, Patrick Godau, et~al.
+\newblock {Metrics reloaded: recommendations for image analysis validation}.
+\newblock {\em Nature Methods}, 21(2):195--212, 2024.
+\newblock doi:10.1038/s41592-023-02151-z.
+
+\bibitem{reinke2024pitfalls}
+Annika Reinke, Minu~D. Tizabi, Michael Baumgartner, et~al.
+\newblock {Understanding metric-related pitfalls in image analysis validation}.
+\newblock {\em Nature Methods}, 21(2):182--194, 2024.
+\newblock doi:10.1038/s41592-023-02150-0.
+
+\bibitem{taha2015metrics}
+Abdel~Aziz Taha and Allan Hanbury.
+\newblock {Metrics for evaluating 3D medical image segmentation: analysis,
+  selection, and tool}.
+\newblock {\em BMC Medical Imaging}, 15(1):29, 2015.
+\newblock doi:10.1186/s12880-015-0068-x.
+
+\bibitem{kingma2015adam}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock {Adam: A Method for Stochastic Optimization}.
+\newblock In {\em International Conference on Learning Representations (ICLR)},
+  2015.
+\newblock arXiv:1412.6980.
+
+\bibitem{karpathy2019recipe}
+Andrej Karpathy.
+\newblock {A Recipe for Training Neural Networks}.
+\newblock \url{https://karpathy.github.io/2019/04/25/recipe/}, 2019.
+
+\bibitem{pytorchtutorials}
+{PyTorch}.
+\newblock {Learn the Basics (tutorials)}.
+\newblock \url{https://pytorch.org/tutorials/beginner/basics/intro.html}.
+
+\bibitem{varoquaux2022failures}
+Gaël Varoquaux and Veronika Cheplygina.
+\newblock {Machine learning for medical imaging: methodological failures and
+  recommendations for the future}.
+\newblock {\em npj Digital Medicine}, 5(1):48, 2022.
+\newblock doi:10.1038/s41746-022-00592-y.
+
+\bibitem{roberts2021covid}
+Michael Roberts, Derek Driggs, Matthew Thorpe, et~al.
+\newblock {Common pitfalls and recommendations for using machine learning to
+  detect and prognosticate for COVID-19 using chest radiographs and CT scans}.
+\newblock {\em Nature Machine Intelligence}, 3(3):199--217, 2021.
+\newblock doi:10.1038/s42256-021-00307-0.
+
+\bibitem{sculley2015debt}
+D.~Sculley, Gary Holt, Daniel Golovin, et~al.
+\newblock {Hidden Technical Debt in Machine Learning Systems}.
+\newblock In {\em Advances in Neural Information Processing Systems (NeurIPS)},
+  pages 2503--2511, 2015.
+
+\bibitem{finlayson2021shift}
+Samuel~G. Finlayson, Adarsh Subbaswamy, Karandeep Singh, et~al.
+\newblock {The Clinician and Dataset Shift in Artificial Intelligence}.
+\newblock {\em New England Journal of Medicine}, 385(3):283--286, 2021.
+\newblock doi:10.1056/NEJMc2104626.
+
+\bibitem{streamlitdocs}
+{Streamlit}.
+\newblock {Streamlit documentation}.
+\newblock \url{https://docs.streamlit.io}.
+
+\bibitem{dockerdocs}
+{Docker}.
+\newblock {Docker documentation: Get started}.
+\newblock \url{https://docs.docker.com/get-started/}.
+
+\bibitem{mitchell2019modelcards}
+Margaret Mitchell, Simone Wu, Andrew Zaldivar, et~al.
+\newblock {Model Cards for Model Reporting}.
+\newblock In {\em Conference on Fairness, Accountability, and Transparency
+  (FAT*)}, pages 220--229, 2019.
+\newblock doi:10.1145/3287560.3287596.
+
+\end{thebibliography}

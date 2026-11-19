@@ -27,12 +27,12 @@ web app step by step, moved from chest X-rays to CT.
 | `03_project_lung_segmentation.ipynb` | the project, 13 steps | days 2 to 4 |
 | `04_nodule_segmentation.ipynb` | advanced, for who has finished the project: nodule patches, baseline, experiments. 10 steps | 3 hours or more |
 | `05_optional_3d_segmentation.ipynb` | optional: the same pipeline in 3D, 8 steps | 2 hours |
-| `theory/theory.pdf` | handbook for the students, 21 pages (source `theory.tex`, figures from `make_figures.py`) | |
+| `theory/theory.pdf` | handbook for the students, 28 pages (source `theory.tex`, bibliography `references.bib`, figures from `make_figures.py`) | |
 | `webapp/` | day 5: guide (`README.md`), `app.py` to complete in 6 steps, Dockerfile, 3 sample slices | day 5 |
 | `solutions/` | the same notebooks completed, with the answers to the "Check yourself" questions; `app.py` completed | |
 | `teachers/` | this guide, `find_the_bugs.md`, the script that builds the dataset | |
 | `seminars/` | the list of the slide decks (one per seminar) with their links, and the outline of each | |
-| `extra_multimodal/` | separate optional module on multimodal fusion: notebook (10 steps), solution, handbook of 7 pages | 2 hours |
+| `extra_multimodal/` | separate optional module on multimodal fusion: notebook (10 steps), solution, handbook with a chapter on embeddings and a bibliography | 2 hours |
 
 Give the students everything except `solutions/`, `teachers/`, `seminars/` and `extra_multimodal/solutions/`.
 
@@ -163,7 +163,7 @@ Everything was run on a computer without GPU, on the full dataset (888 patients,
 | Notebook 04 (solution) | 34 minutes on CPU for six trainings. Baseline validation Dice 0.843, second seed 0.835 (noise 0.008), DiceCE loss 0.828, augmentation 0.858, test 0.853 on 170 nodules. The reference table is also in the solution notebook |
 | Notebook 05 (solution) | run on a smaller sample only (6 training scans: validation Dice 0.94 after 30 epochs) |
 | Web app | the completed app runs with the trained model: upload, three pictures, area, Dice. The student `app.py` runs as it is, with nothing filled in |
-| Handbook | compiles with pdflatex, 21 pages; figures made from the full dataset and the spare model |
+| Handbook | compiles with pdflatex, 28 pages; figures made from the full dataset and the spare model |
 | Student notebooks | every cell is valid Python. They were not completed by hand as a student would |
 
 `teachers/lung_segmenter.pth` is the model of the run above: the spare for students without a model on day 5.

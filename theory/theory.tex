@@ -16,7 +16,7 @@
 \usepackage{xcolor}
 \usepackage{titlesec}
 \usepackage{fancyhdr}
-\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue!50!black]{hyperref}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue!50!black]{hyperref}
 
 \graphicspath{{figures/}}
 \setlength{\parindent}{0pt}
@@ -45,45 +45,74 @@
 \newcommand{\remember}[1]{%
   \par\vspace{0.4em}\noindent\fcolorbox{black!35}{black!4}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
   \textbf{\sffamily Remember.} #1}}\par}
+% Reading list at the end of a chapter
+\newcommand{\further}[1]{\par\vspace{0.7em}\noindent{\small\sffamily\bfseries To study further}\par\vspace{0.15em}%
+  {\footnotesize\raggedright #1\par}}
+% Heading of a part: new page, sans-serif, rule under it, not numbered
+\newcommand{\parthead}[3]{\clearpage\noindent{\sffamily\small\color{black!60}#1}\par\vspace{0.1em}%
+  \noindent{\sffamily\bfseries\LARGE #2}\par\vspace{0.2em}\noindent\rule{\linewidth}{0.6pt}\par\vspace{0.3em}%
+  \noindent{\sffamily\itshape #3}\par\vspace{0.4em}}
+\Urlmuskip=0mu plus 1mu\relax
+\def\UrlBreaks{\do\/\do\-\do\.\do\_\do\?\do\=\do\&\do\#\do\%\do\:}
 
 \begin{document}
 
 \begin{center}
 {\LARGE\bfseries\sffamily Lung segmentation hands-on}\\[0.4em]
 {\Large\sffamily The theory you need}\\[0.8em]
-{\small MSc Health Informatics, Advanced Topics in Machine Learning}
+{\small MSc Health Informatics, Advanced Topics in Machine Learning}\\[0.3em]
+{\small\sffamily Version: academic year 2026/27}
 \end{center}
 
 \vspace{0.5em}
 
-This handbook contains the ideas behind the exercises, and nothing else. It follows the order of the course:
-each section says in which notebook it is used. Read a section before the corresponding part, and come back to
-it when a step of the project is not clear. The last page is an index of the terms.
+This handbook contains the ideas behind the exercises, and nothing else.
+
+\begin{center}
+\fcolorbox{black!35}{black!4}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
+\textbf{\sffamily How to use this handbook.}\\
+Read a chapter before its part of the course; each one says where it is used.\\
+Each chapter ends with a ``Remember'' box (what to keep) and a ``To study further'' block.\\
+The numbered references [n] are at the end, followed by an index of the terms on the last page.}}
+\end{center}
 
 \vspace{0.3em}
 \begin{center}
-\begin{tabular}{@{}cll@{}}
+\small
+\begin{tabular}{@{}cp{5.6cm}p{5.8cm}r@{}}
 \toprule
-Section & Topic & Used in \\
+Chapter & Topic & Used in & Page \\
 \midrule
--- & Deep learning in medicine (background) & Seminar 1 \\
-1 & CT images & Notebook 01 \\
-2 & Files: DICOM and NIfTI & Notebook 01 \\
-3 & Preparing the data for a network & Notebook 02; project STEP 3--5 \\
-4 & The segmentation network & Project STEP 6 \\
-5 & Loss and metric: the Dice & Project STEP 7 \\
-6 & Training & Project STEP 8--11 \\
-7 & Is the model good? & Project STEP 12 \\
-8 & Using the model & Project STEP 13; web app \\
-9 & Lung nodules and experiments & Notebook 04 \\
-10 & From a model to a web app & Day 5 \\
+\multicolumn{4}{@{}l}{\textit{Before you start}} \\
+-- & Deep learning in medicine & Seminar 1 & \pageref{sec:intro} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Part I. The images}} \\
+1 & CT images & Notebook 01 & \pageref{sec:ct} \\
+2 & Files: DICOM and NIfTI & Notebook 01 & \pageref{sec:files} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Part II. From images to a trained model}} \\
+3 & Preparing the data for a network & Notebook 02; project STEP 3--5 & \pageref{sec:prep} \\
+4 & The segmentation network & Project STEP 6 & \pageref{sec:net} \\
+5 & Loss and metric: the Dice & Project STEP 7 & \pageref{sec:dice} \\
+6 & Training & Project STEP 8--11 & \pageref{sec:train} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Part III. Can the model be trusted and used}} \\
+7 & Is the model good? & Project STEP 12 & \pageref{sec:eval} \\
+8 & Using the model & Project STEP 13; web app & \pageref{sec:infer} \\
+9 & Lung nodules and experiments & Notebook 04 & \pageref{sec:nodules} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Part IV. From a model to a product}} \\
+10 & From a model to a web app & Day 5 & \pageref{sec:app} \\
+\midrule
+-- & References & & \pageref{sec:refs} \\
+-- & Index of terms & & \pageref{sec:index} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 % ---------------------------------------------------------------------------
 \newpage
-\section*{Before you start: what deep learning does in medicine}
+\section*{Before you start: what deep learning does in medicine}\phantomsection\label{sec:intro}
 \usedin{seminar 1. Background: you do not need this part for the exercises}
 
 \begin{minipage}[c]{0.3\linewidth}
@@ -106,14 +135,14 @@ from many images that already have the right answer.
 \begin{minipage}[c]{9.9cm}{\sffamily\bfseries\large #2}\par\vspace{0.25em}#3\end{minipage}\par\vspace{0.75em}}
 \newcommand{\pic}[1]{\includegraphics[width=2.45cm]{#1}}
 \job{\pic{intro_retina.jpg}\hspace{0.15cm}\pic{intro_skin.jpg}}{1. Classify: one answer for the whole image}{A photograph
-of the retina is graded for diabetic retinopathy; a photograph of a skin lesion is called benign or
-malignant. One of the first networks for skin lesions learned from about 130\,000 photographs.}
+of the retina is graded for diabetic retinopathy \cite{gulshan2016retina}; a photograph of a skin lesion is called benign or
+malignant. One of the first networks for skin lesions learned from about 130\,000 photographs \cite{esteva2017skin}.}
 \job{\pic{intro_detect.jpg}\hspace{0.15cm}\pic{intro_mammo.jpg}}{2. Detect: a box around each finding}{Lung nodules, a
-few millimetres wide, in the CT scans of a screening programme; suspicious areas in mammograms.
+few millimetres wide, in the CT scans of a screening programme \cite{ardila2019lung}; suspicious areas in mammograms \cite{mckinney2020breast}.
 The network points, the radiologist looks.}
 \job{\pic{intro_segment.jpg}\hspace{0.15cm}\pic{intro_nodule.jpg}}{3. Segment: an answer for every pixel}{The outline of
 an organ or of a lesion gives its size and shape: volumes, plans for radiotherapy, growth between
-two scans. Free tools outline more than 100 structures in a CT. \textbf{This is what you build in this course.}}
+two scans. Free tools outline more than 100 structures in a CT \cite{wasserthal2023totalseg}. \textbf{This is what you build in this course.}}
 \job{\begin{tikzpicture}[font=\footnotesize\sffamily, b/.style={draw, fill=black!8, minimum height=0.62cm, minimum width=2.1cm, align=center}]
 \node[b] (i) at (0,0.42) {image};
 \node[b] (c) at (0,-0.42) {clinical data};
@@ -126,7 +155,7 @@ on multimodal models).}
 
 \vspace{0.6em}
 \textbf{In hospitals today.} More than a thousand medical devices based on these methods are on the list of the
-American regulator (FDA), most of them in radiology. Each one does a single narrow task, and it helps a doctor:
+American regulator (FDA) \cite{fdalist}, most of them in radiology. Each one does a single narrow task, and it helps a doctor:
 a person still signs the report.
 
 \newpage
@@ -135,11 +164,11 @@ a person still signs the report.
 \begin{center}
 \begin{tabular}{@{}p{7.3cm}p{7.3cm}@{}}
 \fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Few labelled images.} Anybody can label a
-photograph of a cat. A label on a CT costs the time of a radiologist.}} &
+photograph of a cat. A label on a CT costs the time of a radiologist \cite{willemink2020data}.}} &
 \fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Labels are opinions.} Two experts draw two
 different borders. Our reference masks were drawn by a program.}} \\[0.5em]
 \fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Every hospital is different.} Other scanners,
-other settings, other patients: a model can work in one place and fail in another.}} &
+other settings, other patients: a model can work in one place and fail in another \cite{zech2018generalization}.}} &
 \fcolorbox{black!35}{black!4}{\parbox[t][2.0cm][t]{6.9cm}{\textbf{\sffamily Mistakes cost.} So a model is judged on patients it
 has never seen, and one looks at its worst cases, not only at the average.}} \\
 \end{tabular}
@@ -162,13 +191,18 @@ has never seen, and one looks at its worst cases, not only at the average.}} \\
 \end{tikzpicture}
 \end{center}
 
-{\scriptsize To read more: Gulshan et al., JAMA 2016 (retina); Esteva et al., Nature 2017 (skin); Ardila et al., Nature Medicine 2019
-(lung screening CT); McKinney et al., Nature 2020 (mammography); Wasserthal et al., Radiology: AI 2023 (TotalSegmentator).
-Pictures of the retina (M.~H\"aggstr\"om), skin lesion (Braga et al., CC BY 4.0) and mammogram (National Cancer Institute): Wikimedia Commons.}
+\remember{A network can classify, detect, segment or predict; in this course we segment. Medicine is harder than
+everyday photographs: few labelled images, labels that are opinions, hospitals that differ, mistakes that cost.}
+
+\further{Overview of the field: a survey of deep learning in medical image analysis \cite{litjens2017survey}.\\
+A broader view of AI in health and medicine, beyond images \cite{rajpurkar2022aihealth}.}
+
+{\scriptsize Pictures of the retina (M.~H\"aggstr\"om), skin lesion (Braga et al., CC BY 4.0) and mammogram (National Cancer Institute): Wikimedia Commons.}
 
 \vspace{0.6em}
 % ---------------------------------------------------------------------------
-\section{CT images}
+\parthead{Part I}{The images}{What a CT image is made of, and how it is stored in a file.}
+\section{CT images}\label{sec:ct}
 \usedin{notebook 01, sections 2--6}
 
 CT is one of several ways to look inside the body. Each machine measures something different, so the numbers
@@ -212,7 +246,7 @@ In Python a slice is a NumPy array. Everything we do, from plotting to training,
 \subsection{Hounsfield units}
 
 The numbers of a CT image have a physical meaning. They are expressed in \term{Hounsfield units (HU)}, a scale
-where water is 0 and air is $-1000$. Dense tissue attenuates more and has higher values.
+where water is 0 and air is $-1000$ \cite{hounsfield1973}. Dense tissue attenuates more and has higher values.
 The scale is the same on every scanner, which helps when a model trained on scans from one hospital reads
 scans from another.
 
@@ -282,7 +316,7 @@ To \term{segment} an image means to decide, for every pixel, which structure it 
 \includegraphics[width=0.95\linewidth]{mask.png}
 \end{center}
 
-The masks we use as the correct answer are called \term{reference masks} (you will also read ``ground truth''). In our dataset they were
+The masks we use as the correct answer are called \term{reference masks} (you will also read ``ground truth''). In our dataset (LUNA16 \cite{setio2017luna16,armato2011lidc}) they were
 produced by an automatic program, not drawn by radiologists: most are very good, a few are wrong.
 
 \subsection{Pixel spacing}
@@ -297,12 +331,18 @@ They turn counts of pixels into real measurements:
 \remember{A CT slice is a matrix of Hounsfield units. A window selects the range we care about. A mask gives
 one label per pixel. The spacing converts pixels to millimetres.}
 
+\further{Hounsfield units and windows explained with examples \cite{radiopaediahu}.\\
+Why lung segmentation is mostly a question of data diversity, not of method \cite{hofmanninger2020lung}.}
+
 % ---------------------------------------------------------------------------
-\section{Files: DICOM and NIfTI}
+\section{Files: DICOM and NIfTI}\label{sec:files}
 \usedin{notebook 01, sections 7--9}
 
+\subsection{Two formats}
+
 A medical image file contains the pixels and a \term{header}: information on how to interpret them (size,
-spacing, position in the patient).
+spacing, position in the patient) \cite{larobina2014formats}. Programs such as dcm2niix convert one format into the
+other \cite{li2016dcm2niix}.
 
 \begin{center}
 \begin{tabular}{@{}p{3.2cm}p{5.6cm}p{5.6cm}@{}}
@@ -330,6 +370,8 @@ Python library & \code{pydicom} & \code{nibabel} \\
 \end{tikzpicture}
 \end{center}
 
+\subsection{Reading a DICOM series}
+
 \textbf{DICOM values.} A DICOM file stores raw integers. Two numbers in the header convert them to Hounsfield
 units:
 \[
@@ -338,11 +380,13 @@ units:
 
 \textbf{Order of the slices.} The files of a DICOM folder are not guaranteed to be in order. The position of
 each slice along the body is the third number of the tag \code{ImagePositionPatient}: sort by it before
-stacking the slices.
+stacking the slices \cite{dicomstandard}.
 
 \textbf{Privacy.} DICOM headers contain personal data. Files must be anonymised before they leave the hospital.
 
-\textbf{A scan is a volume.} Stacking the slices gives a 3D array that can be cut in three directions. In our
+\subsection{A scan is a volume}
+
+Stacking the slices gives a 3D array that can be cut in three directions. In our
 demo scan a pixel is 0.76~mm wide and the slices are 2.5~mm apart, so a voxel is not a cube. To show the front
 and side views with the right proportions, the plot must know the slice thickness (in the notebook:
 \code{aspect}); ignoring it flattens the body. The same holds for every measurement of length, area or volume.
@@ -351,7 +395,9 @@ and side views with the right proportions, the plot must know the slice thicknes
 \includegraphics[width=0.95\linewidth]{volume.png}
 \end{center}
 
-\textbf{Orientation.} By convention an axial slice is shown as if we looked at the patient from the feet: the
+\subsection{Orientation}
+
+By convention an axial slice is shown as if we looked at the patient from the feet: the
 patient's right side is on the left of the picture. In our files the first axis of the array is $x$, so we plot
 the transposed array, \code{image.T}.
 
@@ -362,13 +408,17 @@ the transposed array, \code{image.T}.
 \remember{DICOM is the clinical format: many files, raw values, personal data. NIfTI is the research format:
 one file, values in HU, no personal data. We work with NIfTI.}
 
+\further{How the axes and the orientation of a NIfTI file are defined (coordinates and affines) \cite{nibabelcoords}.\\
+A review of the medical image formats, DICOM and NIfTI among them \cite{larobina2014formats}.}
+
 % ---------------------------------------------------------------------------
-\section{Preparing the data for a network}
+\parthead{Part II}{From images to a trained model}{How to prepare the data, build the network, choose the loss and train it.}
+\section{Preparing the data for a network}\label{sec:prep}
 \usedin{notebook 02; project STEP 3, 4 and 5}
 
 \subsection{Tensors and shapes}
 
-PyTorch works with \term{tensors}: arrays that can live on the \term{GPU}, a processor that does the
+PyTorch \cite{paszke2019pytorch} works with \term{tensors}: arrays that can live on the \term{GPU}, a processor that does the
 same simple operation on millions of numbers at once. Training our network on a GPU takes a few minutes; on a normal
 processor, tens of minutes. The network expects a precise
 \term{shape}. For a group of 2D images it is
@@ -395,7 +445,7 @@ When something fails in PyTorch, the first thing to do is to print the shapes.
 
 \subsection{Transforms}
 
-A \term{transform} is a function that does one step of the preparation. The steps of our pipeline:
+A \term{transform} is a function that does one step of the preparation. The steps of our pipeline, with transforms of the library MONAI \cite{cardoso2022monai}:
 
 \begin{center}
 \begin{tabular}{@{}clp{8.3cm}@{}}
@@ -432,7 +482,7 @@ closest one. An average of the labels 0 and 1 would give 0.5, which is not a lab
 
 A network learns from examples, and we have few. \term{Data augmentation} shows the network a slightly
 different version of each image at every epoch: rotated by a few degrees, a little larger or smaller, shifted.
-The network sees more variety and becomes more robust.
+The network sees more variety and becomes more robust \cite{shorten2019augmentation}.
 
 \begin{center}
 \includegraphics[width=0.95\linewidth]{augmentation.png}
@@ -474,7 +524,7 @@ Test & 15\% & used once, at the end, to measure the performance we report \\
 
 Why three and not two? Every choice we make by looking at the validation score (how many epochs, which
 model to keep) fits the model a little to those patients. Only a set that was never looked at gives an honest
-number. All the images of one patient must be in the same set.
+number. All the images of one patient must be in the same set \cite{kapoor2023leakage}.
 
 \subsection{Dataset and DataLoader}
 
@@ -488,13 +538,16 @@ the order changes at every epoch, which helps the training.
 \remember{The network wants tensors of shape (batch, channels, height, width) with values between 0 and 1.
 Transforms prepare them. Augmentation only for training. The test set is opened once, at the end.}
 
+\further{Documentation and tutorials of MONAI, with examples of every transform \cite{monaidocs}.\\
+How medical images are prepared for machine learning: data, labels, splits \cite{willemink2020data}.}
+
 % ---------------------------------------------------------------------------
-\section{The segmentation network}
+\section{The segmentation network}\label{sec:net}
 \usedin{project STEP 6}
 
 \subsection{What a neural network is, in three sentences}
 
-A neural network is a function with millions of adjustable numbers, the \term{weights}. It takes an image and
+A neural network \cite{lecun2015deep} is a function with millions of adjustable numbers, the \term{weights}. It takes an image and
 returns a prediction. \term{Training} means adjusting the weights until the predictions are close to the
 correct answers.
 
@@ -532,7 +585,7 @@ layer of our trained lung model computes for one slice: nobody chose these filte
 
 \subsection{The U-Net}
 
-The \term{U-Net} is the standard network for medical image segmentation. It has two halves.
+The \term{U-Net} \cite{ronneberger2015unet} is the standard network for medical image segmentation. It has two halves.
 
 \begin{center}
 \begin{tikzpicture}[
@@ -599,13 +652,18 @@ sees the whole chest at once, but the border of the lungs is lost. The decoder a
 \remember{The U-Net goes down to understand what is in the image and up to say where; skip connections keep
 the details. Its output is one score per class for each pixel; argmax gives the mask.}
 
+\further{Textbooks: Goodfellow et al., \emph{Deep Learning} \cite{goodfellow2016deep}; Prince, \emph{Understanding Deep Learning} \cite{prince2023udl}.\\
+Where the field is now: nnU-Net, a U-Net that configures itself \cite{isensee2021nnunet}, and a revisit of it as a baseline and of how segmentation is validated \cite{isensee2024revisited}.\\
+Free CT model for more than 100 structures \cite{wasserthal2023totalseg}; transformer encoder in a U-shaped network \cite{hatamizadeh2022unetr}.\\
+Foundation models that segment with a click or a box \cite{kirillov2023sam,ma2024medsam}.}
+
 % ---------------------------------------------------------------------------
-\section{Loss and metric: the Dice}
+\section{Loss and metric: the Dice}\label{sec:dice}
 \usedin{project STEP 7}
 
 \subsection{The Dice score}
 
-To compare a predicted mask $P$ with the reference mask $T$ we measure how much they overlap:
+To compare a predicted mask $P$ with the reference mask $T$ we measure how much they overlap (the Dice coefficient \cite{dice1945}):
 \[
 \text{Dice} = \frac{2\,|P \cap T|}{|P| + |T|}
 \]
@@ -666,7 +724,7 @@ stay identical and the network would get no information on how to improve.
 
 \subsection{The Dice loss}
 
-The \term{Dice loss} is the same formula computed on the \emph{probabilities} instead of the mask. For each
+The \term{Dice loss} \cite{milletari2016vnet} is the same formula computed on the \emph{probabilities} instead of the mask. For each
 pixel $i$ let $p_i$ be the probability of ``lung'' given by the network (after softmax, between 0 and 1) and
 $t_i$ the true label (0 or 1):
 \[
@@ -716,13 +774,16 @@ per class, to match the two output channels.
 
 \textbf{Cross-entropy}, the other common loss, looks at each pixel separately: it is small when the network
 gives a high probability to the correct class of that pixel. It does not know about overlap, so with small
-structures it is dominated by the background. \code{DiceCELoss} is the sum of the two (used in notebook 04).
+structures it is dominated by the background \cite{sudre2017gdl}. \code{DiceCELoss} is the sum of the two (used in notebook 04).
 
 \remember{Dice measures overlap, from 0 to 1, and is not fooled by a large background. The Dice loss is the
 same formula on probabilities, so that it changes smoothly. The loss is for the training, the metric is for us.}
 
+\further{How to choose a metric for a segmentation task, with its traps \cite{maierhein2024metrics,reinke2024pitfalls}.\\
+A comparison of 3D segmentation metrics, Dice included \cite{taha2015metrics}.}
+
 % ---------------------------------------------------------------------------
-\section{Training}
+\section{Training}\label{sec:train}
 \usedin{project STEP 8, 9, 10 and 11}
 
 \subsection{The idea}
@@ -759,7 +820,7 @@ e & \code{optimizer.step()} & change the weights \\
 \end{tabular}
 \end{center}
 
-The \term{optimizer} is the object that applies the change. We use Adam, a version of gradient descent that
+The \term{optimizer} is the object that applies the change. We use Adam \cite{kingma2015adam}, a version of gradient descent that
 adapts the size of the step for each weight.
 
 \begin{center}
@@ -823,20 +884,29 @@ Error about sizes & print the shapes of images, labels and outputs \\
 \remember{Five lines per batch: zero\_grad, forward, loss, backward, step. Watch the validation Dice, not the
 training loss, and keep the model with the best validation Dice.}
 
+\further{A practical guide to training networks and debugging them \cite{karpathy2019recipe}.\\
+The PyTorch tutorials, from tensors to a full training loop \cite{pytorchtutorials}.\\
+A textbook that covers optimisation and training in depth \cite{goodfellow2016deep}.}
+
 % ---------------------------------------------------------------------------
-\section{Is the model good?}
+\parthead{Part III}{Can the model be trusted and used}{How to judge a model honestly, use it on new images, and experiment with small objects.}
+\section{Is the model good?}\label{sec:eval}
 \usedin{project STEP 12}
 
 The test set gives the number to report. Three habits make that number honest.
 
-\textbf{One value per patient, not only the mean.} A mean Dice of 0.98 can hide one patient at 0.60. Compute the
-Dice of each patient, look at the distribution (minimum, histogram), and look at the worst cases.
+\subsection{One value per patient}
+
+A mean Dice of 0.98 can hide one patient at 0.60. Compute the
+Dice of each patient, look at the distribution (minimum, histogram), and look at the worst cases \cite{maierhein2024metrics}.
 
 \begin{center}
 \includegraphics[width=0.55\linewidth]{test_dice.png}
 \end{center}
 
-\textbf{Look at the failures.} For each bad case ask: is the model wrong, or is the reference mask wrong? What
+\subsection{Look at the failures}
+
+For each bad case ask: is the model wrong, or is the reference mask wrong? What
 do the bad cases have in common (very small lungs at the top or bottom of the chest, disease, an unusual
 scan)? The answers say where the model cannot be trusted.
 
@@ -849,24 +919,34 @@ Yours will be different patients: look at them in STEP 12.}
 \end{minipage}
 \end{center}
 
-\textbf{Know the limits of the data.} Our reference masks are automatic, so a high Dice means ``the model agrees
-with another program''. All patients come from one public dataset of adults. A good result here is a good
+\subsection{The limits of the data}
+
+Our reference masks are automatic, so a high Dice means ``the model agrees
+with another program''. All patients come from one public dataset of adults, and one dataset is not every hospital \cite{zech2018generalization}. A good result here is a good
 student project, not a clinical tool.
 
 \remember{Report the distribution, not only the mean. Look at the worst cases. Say what the data cannot tell.}
 
+\further{Methodological failures of machine learning in medical imaging, and how to avoid them \cite{varoquaux2022failures}.\\
+A catalogue of the traps of metrics and validation \cite{reinke2024pitfalls}.\\
+A review of common pitfalls, with COVID-19 models as the case \cite{roberts2021covid}.}
+
 % ---------------------------------------------------------------------------
-\section{Using the model}
+\section{Using the model}\label{sec:infer}
 \usedin{project STEP 13; web app}
 
 \term{Inference} means using a trained model on a new image, with no mask and no training.
 
-\textbf{What a saved model is.} The file \code{lung\_segmenter.pth} contains only the weights. To use it we must
+\subsection{What a saved model is}
+
+The file \code{lung\_segmenter.pth} contains only the weights. To use it we must
 first build the same network (same \code{channels}, same \code{strides}) and then load the weights into it.
 
-\textbf{The rule of inference.} The model has learned from images prepared in one precise way: window
+\subsection{The rule of inference}
+
+The model has learned from images prepared in one precise way: window
 $-1000/400$ HU, rescaled to $0/1$, resized to $256 \times 256$. A new image must go through \emph{exactly the
-same} preparation. If the application uses another window or another size, nothing crashes: the model simply
+same} preparation \cite{sculley2015debt}. If the application uses another window or another size, nothing crashes: the model simply
 receives images unlike the ones it knows, and its predictions get worse silently. This is the most common
 mistake when a model moves from a notebook to an application.
 
@@ -877,14 +957,19 @@ mistake when a model moves from a notebook to an application.
 message, and a wrong mask.}
 \end{center}
 
+\subsection{The steps}
+
 The steps of inference: load the file, prepare it as in the training, add the batch dimension, run the model
 in evaluation mode without gradients, take the argmax.
 
 \remember{A model is weights plus the exact preparation of its input. Change the preparation and the model
 fails without telling you.}
 
+\further{Why the preparation of the data is part of the system, and what breaks when it differs \cite{sculley2015debt}.\\
+How clinical data change over time and what it does to a model \cite{finlayson2021shift}.}
+
 % ---------------------------------------------------------------------------
-\section{Lung nodules and experiments}
+\section{Lung nodules and experiments}\label{sec:nodules}
 \usedin{notebook 04}
 
 \subsection{Why nodules are harder than lungs}
@@ -933,7 +1018,7 @@ around the nodule.
 \end{center}
 
 In our dataset the masks are discs: we know the centre and the diameter of each nodule, measured by
-radiologists, but not its outline. Real nodules are not perfect circles, so no model can reach a Dice of 1
+radiologists, but not its outline \cite{setio2017luna16}. Real nodules are not perfect circles, so no model can reach a Dice of 1
 against these masks.
 
 \subsection{How to run an experiment}
@@ -942,7 +1027,7 @@ With lungs, almost any reasonable choice gives a Dice near 0.98. With nodules th
 where we experiment. An experiment answers one question, and only if it is done in an orderly way:
 
 \begin{enumerate}
-\item \textbf{Start from a baseline.} Train a first model and write down its validation Dice.
+\item \textbf{Start from a baseline.} Train a first model and write down its validation Dice \cite{isensee2024revisited}.
 \item \textbf{Change one thing.} If you change the loss and the learning rate together and the result
 improves, you do not know which of the two helped.
 \item \textbf{Write what you expect before you run.} One line. It forces you to think, and makes the
@@ -976,9 +1061,15 @@ Intensity window & A narrower window around lung and soft tissue gives the nodul
 \remember{Small objects mean imbalance and unstable scores. Experiment one change at a time, against a
 baseline, and compare differences with the noise between two identical runs.}
 
+\further{A self-configuring segmentation method, a strong baseline for any new task \cite{isensee2021nnunet}.\\
+Overlap measures for unbalanced segmentation problems \cite{sudre2017gdl}.}
+
 % ---------------------------------------------------------------------------
-\section{From a model to a web app}
+\parthead{Part IV}{From a model to a product}{The tools that turn a notebook into a web app anybody can open.}
+\section{From a model to a web app}\label{sec:app}
 \usedin{day 5}
+
+\subsection{The tools}
 
 A model in a notebook is useful only to the person who wrote it. Turning it into something others can use
 takes a few tools, each with one purpose.
@@ -1001,6 +1092,8 @@ this is how software is installed in hospitals. \\
 \end{tabular}
 \end{center}
 
+\subsection{How Streamlit works}
+
 \begin{center}
 \begin{tikzpicture}[font=\footnotesize\sffamily,
   st/.style={draw, fill=black!8, minimum height=0.6cm, minimum width=2.6cm, align=center},
@@ -1016,6 +1109,8 @@ this is how software is installed in hospitals. \\
 \end{tikzpicture}
 \end{center}
 
+\subsection{How Docker works}
+
 \begin{center}
 \begin{tikzpicture}[font=\footnotesize\sffamily]
 \foreach \y/\t/\g in {0/Linux/8, 0.55/Python 3.12/14, 1.1/{packages (\texttt{requirements.txt})}/20, 1.65/{\texttt{app.py} and the model}/26} {
@@ -1028,6 +1123,8 @@ this is how software is installed in hospitals. \\
 \end{tikzpicture}
 \end{center}
 
+\subsection{After the deploy}
+
 \begin{center}
 \begin{minipage}{\linewidth}\centering
 \includegraphics[width=0.42\linewidth]{app.png}
@@ -1038,13 +1135,24 @@ this is how software is installed in hospitals. \\
 
 \textbf{MLOps} is the name for everything that keeps a model working after the training: keeping track of
 which data and which code produced which model, checking that the application prepares the data as in the
-training, noticing when the model meets images unlike the ones it knows, and training it again when needed.
+training, noticing when the model meets images unlike the ones it knows, and training it again when needed \cite{sculley2015debt}.
 
 A public demo is not a medical device. Never upload real patient data to it.
 
+\further{Streamlit documentation: widgets, caching, deployment \cite{streamlitdocs}.\\
+Docker documentation, the ``Get started'' guide \cite{dockerdocs}.\\
+Model cards: a short, standard way to describe what a model is for and where it fails \cite{mitchell2019modelcards}.}
+
 % ---------------------------------------------------------------------------
 \newpage
-\section*{Index of terms}
+\phantomsection\label{sec:refs}
+\begingroup\small
+\bibliographystyle{unsrt}
+\bibliography{references}
+\endgroup
+
+\newpage
+\section*{Index of terms}\phantomsection\label{sec:index}
 
 \renewcommand{\arraystretch}{1.08}
 \begin{center}
@@ -1058,26 +1166,26 @@ Augmentation & 3.3 & random small changes of the training images \\
 Batch & 3.1 & the images processed together \\
 Channel & 3.1 & how many values each pixel has \\
 Class imbalance & 9.1 & one class has far more pixels than the other \\
-Container, image (Docker) & 10 & an app packed with everything it needs \\
+Container, image (Docker) & 10.1, 10.3 & an app packed with everything it needs \\
 Convolution & 4.2 & a small filter sliding over the image \\
 DataLoader & 3.5 & groups the samples in batches \\
 Dataset & 3.5 & gives sample number $i$ \\
 Cross-entropy & 5.3 & a loss that judges each pixel separately \\
 Dice & 5.1 & overlap between two masks, from 0 to 1 \\
 Dice loss & 5.3 & the Dice formula on probabilities; what the training reduces \\
-DICOM & 2 & clinical image format, one file per slice \\
+DICOM & 2.1, 2.2 & clinical image format, one file per slice \\
 Encoder, decoder & 4.3 & the two halves of the U-Net \\
 Epoch & 6.3 & one pass over the training images \\
 Gradient & 6.1 & how the loss changes when a weight changes \\
 Feature map & 4.2 & the output of one filter of a layer \\
 Hounsfield unit & 1.2 & the unit of CT values: water 0, air $-1000$ \\
-Inference & 8 & using a trained model on new images \\
+Inference & 8.1 & using a trained model on new images \\
 Interpolation & 3.2 & how new pixels are computed when resizing \\
 Learning rate & 6.1 & the size of each change of the weights \\
 Loss & 5.2 & the error that the training reduces \\
 Mask, label & 1.4 & one whole number per pixel \\
 Metric & 5.2 & the number we read to judge the model \\
-NIfTI & 2 & research image format, one file per scan \\
+NIfTI & 2.1 & research image format, one file per scan \\
 Optimizer & 6.2 & the object that changes the weights \\
 Overfitting & 6.4 & memorising the training images \\
 Patch & 9.1 & a small piece cut from an image \\
@@ -1089,8 +1197,8 @@ Tensor, shape & 3.1 & the arrays of PyTorch and their dimensions \\
 Training, validation, test & 3.4 & learn, check while learning, measure at the end \\
 Transform & 3.2 & one step of the preparation of the data \\
 U-Net & 4.3 & the standard network for segmentation \\
-Voxel, volume & 1.1, 2 & an element of the 3D array; the stack of the slices \\
-Virtual environment & 10 & a private Python for one project \\
+Voxel, volume & 1.1, 2.3 & an element of the 3D array; the stack of the slices \\
+Virtual environment & 10.1 & a private Python for one project \\
 Weights & 4.1 & the adjustable numbers of a network \\
 Window & 1.3 & the range of HU that is shown or kept \\
 \bottomrule

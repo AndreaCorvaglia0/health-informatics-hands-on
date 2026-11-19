@@ -6,8 +6,9 @@ nodules (notebook 04) and want one more topic: models that use an image **and** 
 | File | What it is |
 |---|---|
 | `multimodal_fusion.ipynb` | the notebook, 10 steps, about 2 hours, CPU is enough |
-| `handbook.pdf` | the theory you need for the notebook, 7 pages, in the same order |
+| `handbook.pdf` | the theory you need for the notebook, in the same order, with a chapter on embeddings |
 | `solutions/multimodal_fusion.ipynb` | the notebook completed (teachers) |
+| `solutions/embedding_comparison.py` | a script that compares embeddings (teachers), see below |
 
 It runs on Kaggle like the other notebooks, with the same dataset (`luna16-lung-slices`, folder `nodules`).
 Internet must be on: STEP 8 downloads a pretrained network.
@@ -45,3 +46,21 @@ module has a medical meaning: it teaches the method.
 
 The intermediate fusion network is no better than the clinical data alone: 420 training patients are too few to
 learn the image branch from scratch. The notebook says so. It is a useful result to discuss.
+
+## Two more challenges on embeddings
+
+At the end of the notebook, "If you have finished" has two new challenges. Challenge 4 cuts a 32 x 32 crop around
+the nodule and computes the embeddings on the crop. Challenge 5 uses another network, DINOv2, on the whole patch
+and on the crop. The solution notebook runs both (it installs `transformers`). The handbook, chapter 5, explains
+what is compared.
+
+| Embedding | AUC alone | AUC with clinical data |
+|---|---|---|
+| DenseNet121, whole patch | 0.72 | 0.80 |
+| DenseNet121, crop | 0.74 | 0.84 |
+| DINOv2, whole patch | 0.67 | 0.75 |
+| DINOv2, crop | 0.76 | 0.85 |
+
+The script `solutions/embedding_comparison.py` gives the same numbers outside the notebook, with the R2 for the
+diameter and a DINOv2 variant (mean of the patches). Run it with
+`python embedding_comparison.py /path/to/luna16-lung-slices`. It needs `monai` and `transformers`.
