@@ -34,15 +34,15 @@ web app step by step, moved from chest X-rays to CT.
 | `seminars/` | the list of the slide decks (one per seminar) with their links, and the outline of each | |
 | `extra_multimodal/` | separate optional module on multimodal fusion: notebook (10 steps), solution, handbook of 7 pages | 2 hours |
 
-Give the students everything except `solutions/` and `teachers/`.
+Give the students everything except `solutions/`, `teachers/`, `seminars/` and `extra_multimodal/solutions/`.
 
 ## Schedule (24 hours)
 
 | Day | Hours | Opening | Hands-on |
 |---|---|---|---|
-| 1 | 5 | Full introduction (about 1 h) | Setup part B and notebook 00 (30 min). Notebook 01. Notebook 02. |
+| 1 | 5 | Course presentation (15 min), seminar 1: deep learning in medicine (30 min), seminar 2: medical images and their files (40 min) | Setup part B and notebook 00 (30 min). Notebook 01. Notebook 02. |
 | 2 | 5 | Seminar 45 min: segmentation, U-Net, Dice | Project STEP 1 to 7 |
-| 3 | 5 | Seminar 45 min: how a network learns, curves, overfitting | Project STEP 8 to 11. Everybody downloads `lung_segmenter.pth`. Fast students: STEP 12 and 13, then notebook 04. |
+| 3 | 5 | Seminar 45 min: how a network learns, curves, overfitting; then a preview of day 4 (test set, looking at failures, nodules and experiments) | Project STEP 8 to 11. Everybody downloads `lung_segmenter.pth`. Fast students: STEP 12 and 13, then notebook 04. |
 | 4 | 5 | No seminar | Project STEP 12 and 13 for who still has them, with our help. Everybody else: notebook 04. At the end of the day, if there is time: parts 1-3 of the web app guide (laptop, venv, first run), for a lighter day 5. |
 | 5 | 4 | Short seminar: MLOps, Docker, the last part of the project | Web app guide parts 1 to 7 |
 
@@ -76,7 +76,7 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
    was built from LUNA16, and why, is in `teachers/data_prep/DATASET.md`; `build_dataset.sh` rebuilds it.
 2. **Run the solution notebooks on Kaggle with the GPU and the full dataset.** Write down: the time of one
    epoch, the validation Dice after 20 epochs, the mean test Dice. Then check the three sentences in
-   notebook 03 that state expected values ("around 0.5 - 0.6" in STEP 7, "about 0.98" in STEP 9, "about 0.97"
+   notebook 03 that state expected values ("around 0.5 - 0.6" in STEP 7, "between 0.98 and 0.99" in STEP 9, "about 0.97 - 0.98"
    in STEP 12): they come from a run on CPU and should hold, correct them if needed. Do the same for notebook 04: note the baseline Dice, the noise between the two
    seeds and the effect of the two guided experiments, so that you know what to expect when students show you
    their numbers. See "What was tested" below.
@@ -110,7 +110,7 @@ Days 2 - 4
 - STEP 9: running the training cell twice continues the training of the same model. To start again, run from
   STEP 6.
 - STEP 11: closing Kaggle without downloading the model.
-- STEP 12: the worst test case is sometimes a patient whose "true" mask is wrong (in subset 0, `case_0011`:
+- STEP 12: the worst test case is sometimes a patient whose reference mask is wrong (in subset 0, `case_0011`:
   the air around the body is labelled as lung). The model is right. Use it: this is the moment to explain
   that the masks are automatic and what that means for the numbers.
 
@@ -133,8 +133,8 @@ Notebook 04
 3. At the end of notebook 03, three short challenges on the lungs: threshold baseline, right and left lung,
    find the bugs (`teachers/find_the_bugs.md`).
 4. Notebook 05, 3D.
-5. Day 5: Dice with the true mask, sliders, download button, choice among several models.
-6. Only for who has done all of this: `extra_multimodal/`, images and clinical data together. It is outside
+5. Day 5: Dice with the reference mask, sliders, download button, choice among several models.
+6. Only for who has finished notebooks 03 and 04 and wants one more topic: `extra_multimodal/`, images and clinical data together. It is outside
    the path of the course on purpose: its clinical data are invented and it runs on CPU.
 
 ## About the nodule data
@@ -167,6 +167,8 @@ Everything was run on a computer without GPU, on the full dataset (888 patients,
 | Student notebooks | every cell is valid Python. They were not completed by hand as a student would |
 
 `teachers/lung_segmenter.pth` is the model of the run above: the spare for students without a model on day 5.
+
+The extra module (`extra_multimodal/`): solution notebook run on CPU in about one minute, AUCs as in its README; student version checked for syntax only.
 
 Not tested: a GPU, Kaggle itself, the deploy on Streamlit Community Cloud, the Docker build, the GitHub steps.
 

@@ -128,10 +128,10 @@ st.metric("Lung area in this slice", f"{area:.1f} cm²")
 
 
 # ----------------------------------------------------------
-# EXTRA: Compare with the true mask
+# EXTRA: Compare with the reference mask
 # ----------------------------------------------------------
 
-mask_file = st.file_uploader("True mask (.nii.gz), optional", type=["nii", "gz"], key="mask")
+mask_file = st.file_uploader("Reference mask (.nii.gz), optional", type=["nii", "gz"], key="mask")
 
 if mask_file is not None:
     mask_transforms = Compose([
@@ -143,4 +143,4 @@ if mask_file is not None:
     true = (mask == 1) | (mask == 2)
 
     dice = 2 * (pred * true).sum() / (pred.sum() + true.sum())
-    st.metric("Dice with the true mask", f"{dice:.3f}")
+    st.metric("Dice with the reference mask", f"{dice:.3f}")

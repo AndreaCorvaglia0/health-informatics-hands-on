@@ -97,7 +97,7 @@ In Python a slice is a NumPy array. Everything we do, from plotting to training,
 
 The numbers of a CT image have a physical meaning. They are expressed in \term{Hounsfield units (HU)}, a scale
 where water is 0 and air is $-1000$. Dense tissue attenuates more and has higher values.
-The scale is the same on every scanner, which is why a model trained on scans from one hospital can read
+The scale is the same on every scanner, which helps when a model trained on scans from one hospital reads
 scans from another.
 
 \begin{center}
@@ -140,7 +140,7 @@ measured by the scanner. They are not tissue and must be cut away.
 
 \subsection{Windowing}
 
-A CT image has thousands of different values, a screen shows a few hundred grey levels. A \term{window} is a
+A CT image has thousands of different values, a screen shows about 256 grey levels. A \term{window} is a
 range of HU, from $\mathrm{HU}_{\min}$ to $\mathrm{HU}_{\max}$, that is stretched over the whole grey scale.
 Values below the range become black, values above become white.
 
@@ -166,7 +166,7 @@ To \term{segment} an image means to decide, for every pixel, which structure it 
 \includegraphics[width=0.95\linewidth]{mask.png}
 \end{center}
 
-The masks we use as the correct answer are called \term{ground truth} or reference. In our dataset they were
+The masks we use as the correct answer are called \term{reference masks} (you will also read ``ground truth''). In our dataset they were
 produced by an automatic program, not drawn by radiologists: most are very good, a few are wrong.
 
 \subsection{Pixel spacing}
@@ -240,8 +240,8 @@ one file, values in HU, no personal data. We work with NIfTI.}
 \subsection{Tensors and shapes}
 
 PyTorch works with \term{tensors}: arrays that can live on the \term{GPU}, a processor that does the
-same simple operation on millions of numbers at once. Training a network on a GPU takes minutes; on a normal
-processor, hours. The network expects a precise
+same simple operation on millions of numbers at once. Training our network on a GPU takes a few minutes; on a normal
+processor, tens of minutes. The network expects a precise
 \term{shape}. For a group of 2D images it is
 \[
 (\text{batch},\ \text{channels},\ \text{height},\ \text{width}) \qquad\text{for example}\qquad (16,\ 1,\ 256,\ 256)
@@ -458,7 +458,7 @@ the details. Its output is one score per class for each pixel; argmax gives the 
 
 \subsection{The Dice score}
 
-To compare a predicted mask $P$ with the true mask $T$ we measure how much they overlap:
+To compare a predicted mask $P$ with the reference mask $T$ we measure how much they overlap:
 \[
 \text{Dice} = \frac{2\,|P \cap T|}{|P| + |T|}
 \]
@@ -682,7 +682,7 @@ training loss, and keep the model with the best validation Dice.}
 
 The test set gives the number to report. Three habits make that number honest.
 
-\textbf{One value per patient, not only the mean.} A mean Dice of 0.97 can hide one patient at 0.60. Compute the
+\textbf{One value per patient, not only the mean.} A mean Dice of 0.98 can hide one patient at 0.60. Compute the
 Dice of each patient, look at the distribution (minimum, histogram), and look at the worst cases.
 
 \begin{center}
@@ -782,7 +782,7 @@ against these masks.
 
 \subsection{How to run an experiment}
 
-With lungs, almost any reasonable choice gives a Dice near 0.97. With nodules the choices matter, so this is
+With lungs, almost any reasonable choice gives a Dice near 0.98. With nodules the choices matter, so this is
 where we experiment. An experiment answers one question, and only if it is done in an orderly way:
 
 \begin{enumerate}
@@ -808,7 +808,7 @@ Choice & Idea \\
 \midrule
 Loss & The Dice loss alone can be unstable with tiny objects. Adding cross-entropy (\code{DiceCELoss}), which
 judges every pixel, can make the training steadier. Whether it helps on our data is for you to measure. \\
-Augmentation & For a round nodule, flips and rotations by any angle are realistic: more variety for free. \\
+Augmentation & For a round nodule, flips and rotations by 90 degrees are realistic: more variety for free. \\
 Learning rate & Ten times larger or smaller: look at how the curves change. \\
 Size of the network & A smaller network may be enough for small patches, and overfits less. \\
 Number of epochs & Small datasets overfit quickly: check where the validation Dice peaks. \\

@@ -35,7 +35,7 @@ waiting, to `04_nodule_segmentation`: the same code on a harder problem, with ro
 - **`webapp/README.md`** is the guide for day 5.
 - [SYLLABUS.md](SYLLABUS.md) lists the topics of each day and where to study them further.
 - **`extra_multimodal/`** is a separate optional module on models that use images and clinical data together.
-  Open it only if you have finished everything else.
+  Open it only if you have finished notebooks 03 and 04.
 
 Notebooks 00 to 05 run on Kaggle. The web app runs on your laptop.
 

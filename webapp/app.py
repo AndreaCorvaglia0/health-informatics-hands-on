@@ -150,13 +150,13 @@ def pixel_area_cm2(path):
 
 
 # ----------------------------------------------------------
-# EXTRA: Compare with the true mask (if you have finished)
+# EXTRA: Compare with the reference mask (if you have finished)
 # ----------------------------------------------------------
-# 1. Add a second upload button for the true mask. Give it key="mask":
-#        mask_file = st.file_uploader("True mask (.nii.gz), optional", type=["nii", "gz"], key="mask")
+# 1. Add a second upload button for the reference mask. Give it key="mask":
+#        mask_file = st.file_uploader("Reference mask (.nii.gz), optional", type=["nii", "gz"], key="mask")
 # 2. If a mask was uploaded: load it with LoadImage, EnsureChannelFirst and Resize (mode="nearest"),
 #    and keep only the lungs (labels 1 and 2).
-# 3. Compute the Dice score between pred and the true mask:
+# 3. Compute the Dice score between pred and the reference mask:
 #        dice = 2 * (pred * true).sum() / (pred.sum() + true.sum())
 # 4. Show it with st.metric.
 #

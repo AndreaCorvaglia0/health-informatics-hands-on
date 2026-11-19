@@ -181,7 +181,7 @@ computer it may not. A **Docker image** is a package that contains the app toget
 Linux, Python, the libraries, your model. A **container** is an image that is running. The same image runs in
 the same way on any computer that has Docker. This is how software is installed in hospitals.
 
-The recipe to build the image is the file `Dockerfile`. Open it: it has six instructions, each one explained
+The recipe to build the image is the file `Dockerfile`. Open it: it has seven instructions, each one explained
 by a comment.
 
 If Docker Desktop works on your laptop (part C4 of the setup):
@@ -209,7 +209,7 @@ If Docker does not work on your laptop, follow the teacher's demonstration.
 
 ## If you have finished
 
-- Do the **EXTRA** step at the end of `app.py`: upload the true mask and show the Dice score.
+- Do the **EXTRA** step at the end of `app.py`: upload the reference mask and show the Dice score.
 - Add a slider for the transparency of the overlay (`st.slider`).
 - Add a button to download the predicted mask (`st.download_button`).
 - If you trained more than one model in the extra experiments, let the user choose which one to use

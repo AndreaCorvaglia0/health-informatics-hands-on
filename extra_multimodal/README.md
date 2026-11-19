@@ -43,5 +43,5 @@ module has a medical meaning: it teaches the method.
 | early fusion with embeddings | 0.80 |
 | intermediate fusion | 0.69 |
 
-The intermediate fusion network is the weakest: 420 training patients are too few to
+The intermediate fusion network is no better than the clinical data alone: 420 training patients are too few to
 learn the image branch from scratch. The notebook says so. It is a useful result to discuss.

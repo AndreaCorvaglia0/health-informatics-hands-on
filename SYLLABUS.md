@@ -45,7 +45,8 @@ Study further
 
 ## Day 3 - Project: training and results
 
-Seminar: how a network learns, reading the learning curves, overfitting.
+Seminar: how a network learns, reading the learning curves, overfitting. The same seminar ends with a preview of
+day 4, which has no seminar: the test set, looking at the failures, nodules and how to run experiments.
 
 | Topic | Level | Where |
 |---|---|---|
@@ -91,7 +92,7 @@ Short seminar: from a model to a product (MLOps), containers, the last part of t
 | GitHub | core | webapp guide, part 5 |
 | Publishing the app | core | webapp guide, part 6 |
 | Docker | core (demo), extra (do it yourself) | webapp guide, part 7 |
-| Dice with the true mask, sliders, download, choice of the model | extra | webapp guide, "If you have finished" |
+| Dice with the reference mask, sliders, download, choice of the model | extra | webapp guide, "If you have finished" |
 
 Study further
 - Streamlit: https://docs.streamlit.io/
@@ -113,6 +114,7 @@ The clinical data of this module are invented; the images are the nodule patches
 | Early and late fusion | extra | multimodal_fusion, STEP 6-7 |
 | Embeddings from a pretrained network | extra | multimodal_fusion, STEP 8 |
 | Intermediate fusion | extra | multimodal_fusion, STEP 9 |
+| Comparing the models; how the data were generated | extra | multimodal_fusion, STEP 10 |
 
 Theory: `extra_multimodal/handbook.pdf`.
 
