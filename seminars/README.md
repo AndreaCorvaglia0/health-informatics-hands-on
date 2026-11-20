@@ -36,3 +36,7 @@ worst cases of our run as a question and leaves the answer to the students (the 
   number on fda.gov (secondary sources report about 1,600 in 2026).
 - The numbers of decks 3, 4 and 5 come from a CPU run of the solutions on the full dataset. If your run on
   Kaggle gives different values, change them (test Dice 0.978, worst case 0.17, nodule table).
+
+## Animations
+
+`animations/` has two GIFs that explain `strides` and `num_res_units` with a real nodule patch. Use them in seminar 2 and on day 4. See `animations/README.md`.
