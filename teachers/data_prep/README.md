@@ -40,9 +40,9 @@ validates a dataset), `prepare_nodule_patches.py` (nodule patches).
 ## Upload to Kaggle
 
 1. kaggle.com -> Create -> New Dataset. Upload `luna16-lung-slices.zip` as it is (inside it, `images/`, `labels/` and the other folders are at the top level). If you built the dataset yourself, zip the content of the folder, not the folder.
-2. Title: `luna16-lung-slices`. The notebooks expect the path `/kaggle/input/luna16-lung-slices`, with
-   `images/` and `labels/` directly inside. If Kaggle mounts it under another path, change the line
-   `DATA_DIR = ...` at the top of each notebook before giving them to the students.
+2. Title: `luna16-lung-slices`. The notebooks look under `/kaggle/input` for a folder with exactly this name
+   (Kaggle puts it in `/kaggle/input/datasets/<owner>/luna16-lung-slices`), with `images/` and `labels/`
+   directly inside. Do not give the dataset another name.
 3. Licence: CC BY 4.0. Keep the files `README.md` and `LICENSE.txt` written by the script (attribution).
 4. Make it public, or private and shared with the students' accounts.
 

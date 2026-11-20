@@ -88,7 +88,7 @@ If you turned the GPU on, it also prints `GPU: OK`.
 | Problem | What to do |
 |---|---|
 | `No module named 'monai'` | Internet is Off. Turn it On (B3) and run the first cell again. |
-| `/kaggle/input/luna16-lung-slices not found` | The dataset is not attached to this notebook (B2). |
+| `.../luna16-lung-slices not found` | The dataset is not attached to this notebook (B2). |
 | The Accelerator menu is disabled | The phone number is not verified (A2). |
 | "You have used your GPU quota" | Work with a classmate until the quota resets, and tell a teacher. |
 | The notebook was idle and everything is gone | The session expired. Run the cells again from the top. |

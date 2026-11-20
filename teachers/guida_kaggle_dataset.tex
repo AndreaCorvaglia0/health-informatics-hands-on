@@ -100,9 +100,10 @@ senza, i notebook non hanno né Internet né GPU.\par\vspace{3pt}
 \begin{verify}{Controllo del percorso}
 In una cella nuova:
 \begin{code}!find /kaggle/input -maxdepth 4 -name metadata.csv\end{code}
-Deve stampare:
-\begin{code}/kaggle/input/luna16-lung-slices/metadata.csv\\/kaggle/input/luna16-lung-slices/nodules/metadata.csv\end{code}
-Se il percorso è diverso va cambiata la riga \chip{DATA\_DIR} nei notebook.
+Deve stampare due righe che finiscono con:
+\begin{code}luna16-lung-slices/metadata.csv\\luna16-lung-slices/nodules/metadata.csv\end{code}
+Kaggle mette il dataset in \file{/kaggle/input/datasets/<utente>/}: i notebook lo cercano per nome, quindi il nome
+del dataset deve essere esattamente \chip{luna16-lung-slices}.
 \end{verify}
 
 \vspace{2pt}

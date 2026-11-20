@@ -82,8 +82,9 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
    their numbers. See "What was tested" below.
 3. **Spare model**: `teachers/lung_segmenter.pth` is ready for students who arrive on day 5 without one.
    Replace it with yours if you prefer.
-4. **Check the path of the dataset**: the notebooks use `/kaggle/input/luna16-lung-slices`. If Kaggle mounts
-   your dataset elsewhere, change `DATA_DIR` in the six notebooks.
+4. **The path of the dataset**: Kaggle mounts an attached dataset under `/kaggle/input/datasets/<owner>/` (seen
+   in November 2026). The notebooks do not depend on it: they look under `/kaggle/input` for a folder named
+   `luna16-lung-slices`. What matters is that the dataset keeps exactly this name.
 5. **Check the names of buttons and menus** in `SETUP.md` and `webapp/README.md` against the current Kaggle,
    VS Code and Streamlit Cloud screens. They were written from the documentation, not from the screens.
 6. **Publish the reference app once** (`solutions/app.py` renamed `app.py`, with your model) on Streamlit
