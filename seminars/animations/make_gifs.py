@@ -5,7 +5,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt, matplotlib.patches as mp
 from PIL import Image
 
-D = "/kaggle/input/luna16-lung-slices/nodules"
+import sys
+D = sys.argv[1] if len(sys.argv) > 1 else "/kaggle/input/luna16-lung-slices/nodules"  # the nodules/ folder of the dataset
 BG, FG, MUTED, TEAL, AMBER, RED = "#FBFAF7", "#1F2A30", "#7A8890", "#159A8C", "#E08A1E", "#C8413B"
 plt.rcParams.update({"font.family": "DejaVu Sans", "text.color": FG, "figure.facecolor": BG, "axes.facecolor": BG})
 
