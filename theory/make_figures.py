@@ -22,8 +22,8 @@ D = sys.argv[1]
 plt.rcParams.update({"font.size": 9})
 save = dict(dpi=200, bbox_inches="tight", pad_inches=0.05)
 
-image = nib.load(f"{D}/images/case_0001.nii.gz").get_fdata()
-mask = nib.load(f"{D}/labels/case_0001.nii.gz").get_fdata()
+image = nib.load(f"{D}/images/case_0001.nii").get_fdata()
+mask = nib.load(f"{D}/labels/case_0001.nii").get_fdata()
 lung = (mask == 1) | (mask == 2)
 
 # windows
@@ -68,7 +68,7 @@ pre = Compose([
     ScaleIntensityRanged(keys="image", a_min=-1000, a_max=400, b_min=0, b_max=1, clip=True),
     Resized(keys=keys, spatial_size=(256, 256), mode=("bilinear", "nearest")),
 ])
-sample = pre({"image": f"{D}/images/case_0001.nii.gz", "label": f"{D}/labels/case_0001.nii.gz"})
+sample = pre({"image": f"{D}/images/case_0001.nii", "label": f"{D}/labels/case_0001.nii"})
 aug = RandAffined(keys=keys, prob=1, rotate_range=0.2, scale_range=0.1, translate_range=10,
                   mode=("bilinear", "nearest"), padding_mode="zeros")
 fig, axes = plt.subplots(1, 4, figsize=(7.5, 2.1))
@@ -101,8 +101,8 @@ fig.savefig("figures/curves.png", **save)
 meta = pd.read_csv(f"{D}/nodules/metadata.csv")
 fig, axes = plt.subplots(1, 6, figsize=(7.5, 1.6))
 for ax, row in zip(axes, meta.sample(6, random_state=1).itertuples()):
-    img = nib.load(f"{D}/nodules/images/{row.nodule_id}.nii.gz").get_fdata()
-    lab = nib.load(f"{D}/nodules/labels/{row.nodule_id}.nii.gz").get_fdata()
+    img = nib.load(f"{D}/nodules/images/{row.nodule_id}.nii").get_fdata()
+    lab = nib.load(f"{D}/nodules/labels/{row.nodule_id}.nii").get_fdata()
     ax.imshow(img.T, cmap="gray", vmin=-1000, vmax=400)
     ax.contour(lab.T, levels=[0.5], colors="r", linewidths=0.8)
     ax.set_title(f"{row.diameter_mm:.0f} mm", fontsize=8)
@@ -186,7 +186,7 @@ fig.tight_layout()
 fig.savefig("figures/learning_rate.png", **save)
 
 # how much of the image is foreground
-nodule_fraction = np.mean([nib.load(f"{D}/nodules/labels/{n}.nii.gz").get_fdata().mean() for n in meta.nodule_id[:200]])
+nodule_fraction = np.mean([nib.load(f"{D}/nodules/labels/{n}.nii").get_fdata().mean() for n in meta.nodule_id[:200]])
 all_meta = pd.read_csv(f"{D}/metadata.csv")
 lung_fraction = (all_meta.right_lung_px + all_meta.left_lung_px).sum() / (all_meta.size_x * all_meta.size_y).sum()
 fig, ax = plt.subplots(figsize=(5.4, 1.1))
@@ -219,7 +219,7 @@ fig.savefig("figures/dice_small.png", **save)
 
 # a scan is a volume: three views, and what happens if the slice thickness is ignored
 from scipy import ndimage
-vol_file = nib.load(f"{D}/demo/volume/case_0001_image.nii.gz")
+vol_file = nib.load(f"{D}/demo/volume/case_0001_image.nii")
 vol = vol_file.get_fdata()
 sx, sy, sz = [float(v) for v in vol_file.header.get_zooms()]
 nx, ny, nz = vol.shape
@@ -274,7 +274,7 @@ if MODEL:
         return torch.softmax(out, dim=1)[0, 1].numpy(), out.argmax(dim=1)[0].numpy()
 
     case = "case_0003"
-    x = prepare(f"{D}/images/{case}.nii.gz")
+    x = prepare(f"{D}/images/{case}.nii")
     prob, pred = predict(x)
 
     # scores -> probabilities -> mask
@@ -291,7 +291,7 @@ if MODEL:
     fig.savefig("figures/output.png", **save)
 
     # same preparation or not
-    x_bad = prepare(f"{D}/images/{case}.nii.gz", lo=-160, hi=240)
+    x_bad = prepare(f"{D}/images/{case}.nii", lo=-160, hi=240)
     _, pred_bad = predict(x_bad)
     fig, axes = plt.subplots(1, 4, figsize=(7.5, 2.2))
     for ax, arr, title in [(axes[0], x[0], "prepared as in training\n(window -1000 / 400)"), (axes[1], pred, "prediction"),
@@ -307,8 +307,8 @@ if MODEL:
     _, cases = train_test_split(other, test_size=0.5, random_state=42)
     dices = []
     for c in cases:
-        _, p = predict(prepare(f"{D}/images/{c}.nii.gz"))
-        lab = nib.load(f"{D}/labels/{c}.nii.gz").get_fdata()
+        _, p = predict(prepare(f"{D}/images/{c}.nii"))
+        lab = nib.load(f"{D}/labels/{c}.nii").get_fdata()
         true = np.asarray(Resize((256, 256), mode="nearest")(torch.tensor(((lab == 1) | (lab == 2))[None].astype(np.float32))))[0]
         dices.append(2 * (p * true).sum() / (p.sum() + true.sum()))
     dices = np.array(dices)
@@ -344,9 +344,9 @@ if MODEL:
     worst = np.argsort(dices)[:3]
     fig, axes = plt.subplots(3, 3, figsize=(4.6, 4.6))
     for col, k in enumerate(worst):
-        xk = prepare(f"{D}/images/{cases[k]}.nii.gz")
+        xk = prepare(f"{D}/images/{cases[k]}.nii")
         _, pk = predict(xk)
-        lab = nib.load(f"{D}/labels/{cases[k]}.nii.gz").get_fdata()
+        lab = nib.load(f"{D}/labels/{cases[k]}.nii").get_fdata()
         ref = np.asarray(Resize((256, 256), mode="nearest")(torch.tensor(((lab == 1) | (lab == 2))[None].astype(np.float32))))[0]
         for row, arr in enumerate([np.asarray(xk[0]), ref, pk]):
             axes[row, col].imshow(arr.T, cmap="gray")

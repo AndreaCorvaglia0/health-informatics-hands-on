@@ -70,7 +70,7 @@ STEP 8 (noise) 15 min, STEP 9 (two guided experiments, then free ones) from one 
 
 ## Before the course
 
-1. **Put the dataset on Kaggle** (one-page guide in Italian: `teachers/guida_kaggle_dataset.pdf`). The ready zip is `luna16-lung-slices.zip` (396 MB; 888 patients, 1184
+1. **Put the dataset on Kaggle** (one-page guide in Italian: `teachers/guida_kaggle_dataset.pdf`). The ready zip is `luna16-lung-slices.zip` (390 MB; 888 patients, 1184
    nodules, 28 low-resolution scans): upload it as a Kaggle dataset named `luna16-lung-slices`
    (`teachers/data_prep/README.md`). How it
    was built from LUNA16, and why, is in `teachers/data_prep/DATASET.md`; `build_dataset.sh` rebuilds it.

@@ -17,7 +17,8 @@ MODEL_PATH = "lung_segmenter.pth"
 
 def save_upload(uploaded_file):
     """Save an uploaded file to a temporary file and return its path."""
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".nii.gz") as tmp:
+    suffix = ".nii.gz" if uploaded_file.name.endswith(".gz") else ".nii"     # nibabel reads the extension
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(uploaded_file.getvalue())
     return tmp.name
 
@@ -93,7 +94,7 @@ def segment(image_path):
 # STEP 4: Upload a file
 # ----------------------------------------------------------
 
-uploaded_file = st.file_uploader("CT slice (.nii.gz)", type=["nii", "gz"])
+uploaded_file = st.file_uploader("CT slice (.nii or .nii.gz)", type=["nii", "gz"])
 
 if uploaded_file is None:
     st.info("Upload a file to start. You can use the files in the folder 'samples'.")
@@ -131,7 +132,7 @@ st.metric("Lung area in this slice", f"{area:.1f} cm²")
 # EXTRA: Compare with the reference mask
 # ----------------------------------------------------------
 
-mask_file = st.file_uploader("Reference mask (.nii.gz), optional", type=["nii", "gz"], key="mask")
+mask_file = st.file_uploader("Reference mask (.nii or .nii.gz), optional", type=["nii", "gz"], key="mask")
 
 if mask_file is not None:
     mask_transforms = Compose([

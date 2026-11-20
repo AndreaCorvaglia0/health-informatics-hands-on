@@ -27,8 +27,8 @@ patches are left as they are.  It needs ``annotations.csv`` in ``--luna-dir`` an
 
 Output::
 
-    nodules/images/nodule_0001.nii.gz   2D NIfTI, int16, Hounsfield units, 64 x 64 pixels
-    nodules/labels/nodule_0001.nii.gz   2D NIfTI, uint8: 0 background, 1 nodule
+    nodules/images/nodule_0001.nii   2D NIfTI, int16, Hounsfield units, 64 x 64 pixels
+    nodules/labels/nodule_0001.nii   2D NIfTI, uint8: 0 background, 1 nodule
     nodules/metadata.csv                nodule_id, case_id, seriesuid, subset, diameter_mm (LUNA16 annotation),
                                         spacing_x, spacing_y, slice_thickness, mask_source, mask_area_mm2,
                                         mask_diameter_mm (circle with the area of the object at the annotated
@@ -191,8 +191,8 @@ def main():
                 mask, source = disc(cx, cy, sx, sy, a.diameter_mm, dz), "disc"
             if not args.relabel:
                 patch = cut(volume[k], x0, y0, -1000)
-                nib.save(nib.Nifti1Image(patch.astype(np.int16), affine), out / "images" / f"{nodule_id}.nii.gz")
-            nib.save(nib.Nifti1Image(mask, affine), out / "labels" / f"{nodule_id}.nii.gz")
+                nib.save(nib.Nifti1Image(patch.astype(np.int16), affine), out / "images" / f"{nodule_id}.nii")
+            nib.save(nib.Nifti1Image(mask, affine), out / "labels" / f"{nodule_id}.nii")
             area, diameter, n_objects = describe(mask, cx, cy, sx, sy)
             rows.append(dict(nodule_id=nodule_id, case_id=case_id, seriesuid=uid, subset=int(cases.loc[uid, "subset"]),
                              diameter_mm=round(a.diameter_mm, 2), spacing_x=round(sx, 4), spacing_y=round(sy, 4),
@@ -202,7 +202,7 @@ def main():
     meta = pd.DataFrame(rows)
     for e in excluded:                                                 # a nodule left out has no files
         for folder in ("images", "labels"):
-            (out / folder / f"{e['nodule_id']}.nii.gz").unlink(missing_ok=True)
+            (out / folder / f"{e['nodule_id']}.nii").unlink(missing_ok=True)
     meta.to_csv(out / "metadata.csv", index=False)
     pd.DataFrame(excluded, columns=["nodule_id", "case_id", "seriesuid", "reason"]).to_csv(out / "excluded.csv", index=False)
     write_readme_section(args.out / "README.md", meta, len(excluded))

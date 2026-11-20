@@ -31,7 +31,7 @@ For each scan:
 | 3. Choose one slice | Among the axial slices where the lung area is at least 30% of the largest lung area of that scan, pick one at random (fixed seed) | See below |
 | 4. Keep the values | Save the slice in Hounsfield units, as 16-bit integers, without windowing and without removing the padding values (-2000, -3024) outside the field of view | Windowing and clipping are things the students must learn to do (notebooks 01 and 02). A dataset already cleaned would hide them |
 | 5. Relabel the mask | 4 -> 1 (right lung), 3 -> 2 (left lung), 5 -> 3 (trachea), everything else 0 | Consecutive labels are easier to explain. The two lungs stay separate, so the "right and left lung" challenge is possible. The binary lung mask is built in the notebooks (`keep_lungs`), which is one more transform to learn |
-| 6. Save | One 2D NIfTI file for the image and one for the mask, same name. The header carries the pixel spacing and the slice thickness | NIfTI is the format the students will meet in research. The spacing is needed to compute areas in cm² |
+| 6. Save | One 2D NIfTI file for the image and one for the mask, same name. The header carries the pixel spacing and the slice thickness | NIfTI is the format the students will meet in research. The spacing is needed to compute areas in cm². Files are saved uncompressed (`.nii`): Kaggle decompresses every `.nii.gz` when it unpacks the zip, so saving them as `.nii` keeps the zip and Kaggle identical. The zip compresses them anyway |
 | 7. Describe | One row in `metadata.csv`: identifiers, original subset, position of the slice (`slice_index`, `n_slices`, `z_rel`), spacing, thickness, lung areas, `has_nodule`, and quality flags | Lets the students explore the dataset, and lets us explain bad results (for example slices near the top of the lungs) |
 
 **Why one slice per patient.** Three reasons. The dataset becomes small (about 300 kB per patient) and a
@@ -84,7 +84,7 @@ they are a good reference, not a perfect truth, and no model can be expected to 
 found, not detection in a scan. Both points are written in notebook 04.
 
 **If radiologist outlines become available** (they exist in LIDC-IDRI), save them in the same layout and nothing
-else changes: `nodules/images/<id>.nii.gz`, `nodules/labels/<id>.nii.gz` with 0 and 1, and
+else changes: `nodules/images/<id>.nii`, `nodules/labels/<id>.nii` with 0 and 1, and
 `nodules/metadata.csv` with at least `nodule_id`, `case_id` and `diameter_mm`.
 
 ## 4. The demonstration scan (`demo/`)
@@ -93,7 +93,7 @@ Notebook 01 needs one complete scan, to show the 3D volume and the DICOM format.
 
 | File | Content | Why |
 |---|---|---|
-| `demo/volume/case_0001_image.nii.gz`, `..._label.nii.gz` | the whole scan and its mask, as NIfTI | the three views (axial, coronal, sagittal) |
+| `demo/volume/case_0001_image.nii`, `..._label.nii` | the whole scan and its mask, as NIfTI | the three views (axial, coronal, sagittal) |
 | `demo/dicom/case_0001/*.dcm` | 40 central slices written as a DICOM series | LUNA16 does not distribute DICOM files, and the students must open some. We write them ourselves from the scan: the pixels are real, the header is minimal and the patient name is clearly fake (`LUNA16^case_0001`). The stored values are HU + 1024 with `RescaleIntercept = -1024`, so that the conversion to HU has to be done |
 | `demo/mhd/` | the same 40 slices in MetaImage | to show the original format |
 
@@ -147,7 +147,7 @@ Built on 18 November 2026 from all ten subsets, with `build_dataset.sh` and seed
 | Nodule masks | area 5 to 782 mm2, median 33 mm2; 55 patches contain more than one object |
 | Nodules left out | 2: `nodule_0842` (no mask for its scan), `nodule_1022` (mask empty on its slice) |
 | Low-resolution 3D scans | 28 |
-| Size | 396 MB zipped: slices 247 MB, 3D scans 83 MB, demonstration scan 75 MB, nodules 15 MB |
+| Size | 390 MB zipped (1.1 GB unpacked, the size it has on Kaggle) |
 
 Checks done on this copy: `--check` reports `RESULT: OK`; slices and nodule patches from every subset were
 looked at by eye, including the reoriented scans (several are patients lying face down: the table is at the top

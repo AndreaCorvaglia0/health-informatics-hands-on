@@ -218,8 +218,8 @@ def write_demo(out: Path, case_id: str, seriesuid: str, vol, lab, spacing, origi
     import SimpleITK as sitk
 
     aff = lps_affine(spacing, origin)
-    save_nifti(vol, aff, out / "demo/volume" / f"{case_id}_image.nii.gz")
-    save_nifti(lab, aff, out / "demo/volume" / f"{case_id}_label.nii.gz")
+    save_nifti(vol, aff, out / "demo/volume" / f"{case_id}_image.nii")
+    save_nifti(lab, aff, out / "demo/volume" / f"{case_id}_label.nii")
     lung_z = np.flatnonzero(((lab == 1) | (lab == 2)).any(axis=(0, 1)))
     mid = int(round((lung_z[0] + lung_z[-1]) / 2))
     z0 = int(np.clip(mid - slab // 2, 0, max(0, vol.shape[2] - slab)))
@@ -253,8 +253,8 @@ def write_lowres(out: Path, case_id: str, vol, lab, spacing, origin, target: flo
     a_img = np.round(sitk.GetArrayFromImage(im)).astype(np.int16).transpose(2, 1, 0)
     a_lab = sitk.GetArrayFromImage(lb).astype(np.uint8).transpose(2, 1, 0)
     aff = lps_affine((target,) * 3, origin)
-    save_nifti(np.ascontiguousarray(a_img), aff, out / "volumes_lowres/images" / f"{case_id}.nii.gz")
-    save_nifti(np.ascontiguousarray(a_lab), aff, out / "volumes_lowres/labels" / f"{case_id}.nii.gz")
+    save_nifti(np.ascontiguousarray(a_img), aff, out / "volumes_lowres/images" / f"{case_id}.nii")
+    save_nifti(np.ascontiguousarray(a_lab), aff, out / "volumes_lowres/labels" / f"{case_id}.nii")
     return dict(size_x=size[0], size_y=size[1], size_z=size[2], spacing_x=target, spacing_y=target,
                 spacing_z=target)
 
@@ -279,8 +279,8 @@ def process_scan(job: dict) -> dict:
             case = job["case_id"] if job["n_slices_per_patient"] == 1 else f"{job['case_id']}_s{j + 1:02d}"
             img2, lab2 = vol[:, :, z], lab[:, :, z]
             aff = lps_affine((sx, sy, sz), (origin[0], origin[1], origin[2] + z * sz))
-            save_nifti(np.ascontiguousarray(img2), aff, out / "images" / f"{case}.nii.gz")
-            save_nifti(np.ascontiguousarray(lab2), aff, out / "labels" / f"{case}.nii.gz")
+            save_nifti(np.ascontiguousarray(img2), aff, out / "images" / f"{case}.nii")
+            save_nifti(np.ascontiguousarray(lab2), aff, out / "labels" / f"{case}.nii")
             lung_px = int(((lab2 == 1) | (lab2 == 2)).sum())
             rows.append(dict(
                 case_id=case, seriesuid=job["seriesuid"], subset=job["subset"], slice_index=int(z),
@@ -431,7 +431,7 @@ maximum, seed {args.seed}).  Intensities are untouched Hounsfield units (int16):
 as -2000 or -3024 outside the field of view are kept on purpose.
 
 ## Layout
-* `images/case_XXXX.nii.gz`: 2D NIfTI, int16 HU.  `labels/case_XXXX.nii.gz`: 2D NIfTI, uint8.
+* `images/case_XXXX.nii`: 2D NIfTI, int16 HU.  `labels/case_XXXX.nii`: 2D NIfTI, uint8.
 * Labels: **0 background, 1 right lung, 2 left lung, 3 trachea/main airways**.
 * `metadata.csv`: `case_id, seriesuid, subset (0-9, official folds), slice_index, n_slices, z_rel,
   spacing_x, spacing_y, slice_thickness, size_x, size_y, right_lung_px, left_lung_px, trachea_px,
@@ -590,9 +590,9 @@ def check_dataset(root: Path) -> bool:
     md = pd.read_csv(md_path)
     if list(md.columns[: len(METADATA_COLUMNS)]) != METADATA_COLUMNS:
         problems.append(f"metadata columns differ from the contract: {list(md.columns)}")
-    img_files = sorted(p.name for p in (root / "images").glob("*.nii.gz"))
-    lab_files = sorted(p.name for p in (root / "labels").glob("*.nii.gz"))
-    expected = sorted(f"{c}.nii.gz" for c in md["case_id"])
+    img_files = sorted(p.name for p in (root / "images").glob("*.nii"))
+    lab_files = sorted(p.name for p in (root / "labels").glob("*.nii"))
+    expected = sorted(f"{c}.nii" for c in md["case_id"])
     if img_files != expected or lab_files != expected:
         problems.append(f"metadata rows ({len(md)}) != files (images {len(img_files)}, labels {len(lab_files)})")
     if md["case_id"].duplicated().any():
@@ -602,7 +602,7 @@ def check_dataset(root: Path) -> bool:
     for _, r in tqdm(list(md.iterrows()), desc="checking", leave=False):
         c = r["case_id"]
         try:
-            im, lb = nib.load(root / "images" / f"{c}.nii.gz"), nib.load(root / "labels" / f"{c}.nii.gz")
+            im, lb = nib.load(root / "images" / f"{c}.nii"), nib.load(root / "labels" / f"{c}.nii")
             a, b = np.asarray(im.dataobj), np.asarray(lb.dataobj)
         except Exception as exc:
             problems.append(f"{c}: cannot load ({exc})")
@@ -679,13 +679,13 @@ def check_dataset(root: Path) -> bool:
 def _check_extras(root: Path, md: pd.DataFrame, warnings: list) -> list[str]:
     """Check demo/ and volumes_lowres/ when present."""
     problems = []
-    vols = sorted((root / "demo/volume").glob("*_image.nii.gz"))
+    vols = sorted((root / "demo/volume").glob("*_image.nii"))
     if not vols:
         warnings.append("demo/volume missing")
     for v in vols:
-        case = v.name.replace("_image.nii.gz", "")
+        case = v.name.replace("_image.nii", "")
         try:
-            im, lb = nib.load(v), nib.load(root / "demo/volume" / f"{case}_label.nii.gz")
+            im, lb = nib.load(v), nib.load(root / "demo/volume" / f"{case}_label.nii")
             if im.shape != lb.shape or im.ndim != 3 or nib.aff2axcodes(im.affine) != ("L", "P", "S"):
                 problems.append(f"demo volume {case}: bad shape/axcodes")
             for d in (root / "demo/dicom" / case, ):
@@ -707,8 +707,8 @@ def _check_extras(root: Path, md: pd.DataFrame, warnings: list) -> list[str]:
             problems.append(f"volumes_lowres/metadata.csv columns: {list(vm.columns)}")
         for _, r in vm.iterrows():
             try:
-                im = nib.load(lr / "images" / f"{r['case_id']}.nii.gz")
-                lb = nib.load(lr / "labels" / f"{r['case_id']}.nii.gz")
+                im = nib.load(lr / "images" / f"{r['case_id']}.nii")
+                lb = nib.load(lr / "labels" / f"{r['case_id']}.nii")
                 ok = im.shape == lb.shape == (r["size_x"], r["size_y"], r["size_z"])
                 ok &= nib.aff2axcodes(im.affine) == ("L", "P", "S")
                 ok &= im.get_data_dtype() == np.int16 and lb.get_data_dtype() == np.uint8

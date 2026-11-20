@@ -54,8 +54,8 @@ def load_patients(data_dir):
     metadata = pd.read_csv(data_dir / "metadata.csv")
     patients = (metadata.sort_values("diameter_mm", ascending=False)
                 .drop_duplicates("case_id").sort_values("case_id").reset_index(drop=True))
-    images = np.stack([nib.load(data_dir / "images" / f"{name}.nii.gz").get_fdata() for name in patients["nodule_id"]])
-    masks = np.stack([nib.load(data_dir / "labels" / f"{name}.nii.gz").get_fdata() for name in patients["nodule_id"]]) > 0.5
+    images = np.stack([nib.load(data_dir / "images" / f"{name}.nii").get_fdata() for name in patients["nodule_id"]])
+    masks = np.stack([nib.load(data_dir / "labels" / f"{name}.nii").get_fdata() for name in patients["nodule_id"]]) > 0.5
     return patients, images, masks
 
 

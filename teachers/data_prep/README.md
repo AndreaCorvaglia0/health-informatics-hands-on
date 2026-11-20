@@ -6,8 +6,9 @@ lung mask, a patch around each nodule, one demonstration scan and a few low-reso
 **What is done to the original data, and why, is described in [DATASET.md](DATASET.md).** This page only has
 the commands.
 
-A ready copy of the dataset exists: `luna16-lung-slices.zip` (396 MB), built on 18 November 2026 (nodule masks
-replaced with the outlines of the radiologists on 19 November) with these
+A ready copy of the dataset exists: `luna16-lung-slices.zip` (390 MB), built on 18 November 2026 (nodule masks
+replaced with the outlines of the radiologists on 19 November, files stored as uncompressed `.nii` on 20 November)
+with these
 scripts. Unless you want to change how it is built, use that zip and go to "Upload to Kaggle". To keep it next
 to the code without putting it in the repository, attach it to a Release (on GitHub: Releases, Draft a new
 release, drop the zip in the assets box).
@@ -50,8 +51,8 @@ validates a dataset), `prepare_nodule_patches.py` (nodule patches).
 
 | | |
 |---|---|
-| `images/case_0001.nii.gz` | 2D NIfTI, 512 x 512, Hounsfield units |
-| `labels/case_0001.nii.gz` | 0 background, 1 right lung, 2 left lung, 3 trachea |
+| `images/case_0001.nii` | 2D NIfTI, 512 x 512, Hounsfield units |
+| `labels/case_0001.nii` | 0 background, 1 right lung, 2 left lung, 3 trachea |
 | `metadata.csv` | one row per patient: pixel spacing, slice thickness, position of the slice (`z_rel`), lung area |
 | `nodules/` | 64 x 64 patches around each annotated nodule, with the mask drawn by the radiologists, for notebook 04 |
 | `demo/` | one complete scan as a DICOM series (40 slices) and as a NIfTI volume, for notebook 01 |
