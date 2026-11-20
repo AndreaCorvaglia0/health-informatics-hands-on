@@ -1,93 +1,131 @@
-\documentclass[11pt,a4paper]{article}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{babel}
-\babelprovide[import,main]{italian}
-\usepackage{mathpazo}
-\usepackage[scaled=0.92]{helvet}
-\renewcommand{\ttdefault}{lmtt}
-\usepackage[margin=2.1cm,top=1.8cm,bottom=1.8cm,headsep=0.5cm]{geometry}
-\usepackage{enumitem}
+% Guida rapida: il dataset del corso su Kaggle. Compilare con XeLaTeX (font Inter e DejaVu Sans Mono).
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=17mm,top=13mm,bottom=11mm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Inter}[Path=/usr/share/fonts/opentype/inter/, Extension=.otf,
+  UprightFont=*-Regular, BoldFont=*-SemiBold, ItalicFont=*-Italic, BoldItalicFont=*-SemiBoldItalic]
+\newfontfamily\heavy{Inter}[Path=/usr/share/fonts/opentype/inter/, Extension=.otf, UprightFont=*-Bold]
+\setmonofont{DejaVu Sans Mono}[Scale=0.84]
 \usepackage{xcolor}
-\usepackage{titlesec}
-\usepackage{fancyhdr}
-\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue!50!black]{hyperref}
-
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{ragged2e}
+\pagestyle{empty}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.3em}
-\setlist{itemsep=0.05em,topsep=0.1em,parsep=0pt}
-\titleformat{\section}{\large\bfseries\sffamily}{\thesection}{0.6em}{}
-\titlespacing*{\section}{0pt}{0.8em}{0.15em}
+\setlength{\parskip}{0pt}
 
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{\small\sffamily Lung segmentation hands-on: per i docenti}
-\fancyhead[R]{\small\sffamily\thepage}
-\renewcommand{\headrulewidth}{0.3pt}
+\definecolor{ink}{HTML}{1B2A33}
+\definecolor{soft}{HTML}{5F6F78}
+\definecolor{accent}{HTML}{14857A}
+\definecolor{accentbg}{HTML}{E8F3F1}
+\definecolor{warn}{HTML}{C9821E}
+\definecolor{warnbg}{HTML}{FDF4E6}
+\definecolor{line}{HTML}{D5DDE0}
+\definecolor{codebg}{HTML}{F2F4F5}
+\color{ink}
+\RaggedRight
+\hyphenpenalty=10000\exhyphenpenalty=10000
 
-\newcommand{\code}[1]{\texttt{\small #1}}
-\newcommand{\btn}[1]{\textsf{\textbf{#1}}}
-\newcommand{\goto}{\,$\rightarrow$\,}
-\newcommand{\infobox}[2]{%
-  \par\vspace{0.3em}\noindent\fcolorbox{black!35}{black!4}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
-  \textbf{\sffamily #1} #2}}\par\vspace{0.1em}}
+% --- interface elements -----------------------------------------------------------------
+\newtcbox{\ui}{on line, nobeforeafter, colback=white, colframe=line, boxrule=0.5pt, arc=2pt, boxsep=0pt,
+  left=3pt, right=3pt, top=1.6pt, bottom=1.2pt, fontupper=\small\bfseries}
+\newcommand{\then}{\,{\color{accent}\small→}\,}
+\newcommand{\file}[1]{{\ttfamily\color{ink}#1}}
+\newtcbox{\chip}{on line, nobeforeafter, colback=codebg, colframe=codebg, boxrule=0pt, arc=1.5pt, boxsep=0pt,
+  left=2.5pt, right=2.5pt, top=1.4pt, bottom=1.2pt, fontupper=\ttfamily}
+
+% --- numbered sections and steps --------------------------------------------------------
+\newcounter{blk}
+\newcommand{\blk}[1]{\par\vspace{7pt}\stepcounter{blk}%
+  \noindent\begin{tikzpicture}[baseline=-0.6ex]
+    \node[circle, fill=accent, text=white, inner sep=0pt, minimum size=17pt, font=\heavy\small] {\theblk};
+  \end{tikzpicture}\hspace{7pt}{\heavy\large #1}\par\vspace{4pt}}
+\DeclareRobustCommand{\stepnum}[1]{\tikz[baseline=-0.65ex]\node[circle, draw=accent, line width=0.7pt, text=accent,
+  inner sep=0pt, minimum size=12.5pt, font=\footnotesize\bfseries]{#1};}
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{label=\stepnum{\arabic*}, leftmargin=29pt, labelsep=7pt, itemsep=2.6pt, topsep=1pt, parsep=0pt}
+
+% --- boxes --------------------------------------------------------------------------------
+\newtcolorbox{note}[1]{enhanced, colback=accentbg, colframe=accentbg, boxrule=0pt, arc=3pt,
+  borderline west={2.5pt}{0pt}{accent}, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  fontupper=\small, before upper={{\bfseries\color{accent}#1}\par\vspace{3pt}}}
+\newtcolorbox{verify}[1]{enhanced, colback=warnbg, colframe=warnbg, boxrule=0pt, arc=3pt,
+  borderline west={2.5pt}{0pt}{warn}, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  fontupper=\small, before upper={{\bfseries\color{warn!85!black}#1}\par\vspace{3pt}}}
+\newtcolorbox{code}{colback=codebg, colframe=codebg, boxrule=0pt, arc=2pt, left=7pt, right=7pt,
+  top=3.5pt, bottom=3.5pt, fontupper=\ttfamily\small, before skip=3pt, after skip=3pt}
+\newcommand{\tick}{\tikz[baseline=-0.6ex]\draw[accent, line width=0.8pt, rounded corners=1pt]
+  (-3.6pt,-3.6pt) rectangle (3.6pt,3.6pt);\hspace{6pt}}
 
 \begin{document}
 
-{\sffamily\bfseries\LARGE Il dataset del corso su Kaggle}\par\vspace{0.2em}
-{\sffamily\color{black!60} Passi essenziali per caricare \code{luna16-lung-slices} e far girare i notebook}\par
-\vspace{0.3em}\noindent\rule{\linewidth}{0.6pt}
+% --- title --------------------------------------------------------------------------------
+{\color{accent}\footnotesize\bfseries\addfontfeatures{LetterSpace=8} GUIDA RAPIDA PER I DOCENTI}\par\vspace{5pt}
+{\heavy\fontsize{21}{25}\selectfont Il dataset del corso su Kaggle}\par\vspace{4pt}
+{\color{soft} Caricare \file{luna16-lung-slices} e verificare che i notebook lo trovino. Circa 20 minuti.}\par
+\vspace{6pt}{\color{line}\rule{\linewidth}{0.6pt}}\par\vspace{4pt}
 
-\infobox{Serve.}{Un account Kaggle con il \textbf{telefono verificato} (Settings\goto Phone verification):
-senza, nei notebook non si attivano né Internet né la GPU. E il file \code{luna16-lung-slices.zip} (396 MB),
-\textbf{senza scompattarlo}.}
+\begin{note}{Prima di iniziare}
+\tick Un account Kaggle con il \textbf{telefono verificato} (\ui{Settings}\then\ui{Phone verification}):
+senza, i notebook non hanno né Internet né GPU.\par\vspace{3pt}
+\tick Il file \file{luna16-lung-slices.zip} (396 MB), \textbf{da non scompattare}.
+\end{note}
 
-\section{Creare il dataset}
-\begin{enumerate}
-\item Su kaggle.com: \btn{Create}\goto\btn{New Dataset}.
-\item Trascina lo zip e aspetta che Kaggle finisca di scompattarlo (alcuni minuti).
-\item Titolo: \code{luna16-lung-slices}. L'indirizzo mostrato sotto deve finire con \code{/luna16-lung-slices}:
+\blk{Creare il dataset}
+\begin{steps}
+\item Su kaggle.com \ui{Create}\then\ui{New Dataset}, trascina lo zip e aspetta che Kaggle lo scompatti.
+\item Titolo \chip{luna16-lung-slices}. L'indirizzo sotto il titolo deve finire con \chip{/luna16-lung-slices}:
       è il nome della cartella che i notebook cercano.
-\item Visibilità \btn{Private} per ora, poi \btn{Create}.
-\item Nella pagina del dataset imposta la licenza \textbf{CC BY 4.0}.
-\end{enumerate}
+\item Visibilità \ui{Private}, poi \ui{Create}. Nella pagina del dataset scegli la licenza \textbf{CC BY 4.0}.
+\end{steps}
 
-\section{Controllare i file}
-Nella scheda \btn{Data} devono esserci le cartelle \code{images}, \code{labels}, \code{nodules},
-\code{volumes\_lowres}, \code{demo} e i file \code{metadata.csv}, \code{README.md}, \code{LICENSE.txt}.
-Dentro le cartelle i file devono finire in \code{.nii.gz}, non in \code{.nii}.
+\blk{Controllare i file}
+\begin{steps}
+\item Nella scheda \ui{Data} ci sono le cartelle \file{images}, \file{labels}, \file{nodules}, \file{volumes\_lowres},
+      \file{demo} e i file \file{metadata.csv}, \file{README.md}, \file{LICENSE.txt}.
+\item I file nelle cartelle finiscono in \chip{.nii.gz}, non in \chip{.nii}.
+\end{steps}
 
-\section{Provare con un notebook}
-\begin{enumerate}
-\item \btn{Create}\goto\btn{New Notebook}, poi \btn{File}\goto\btn{Import Notebook}: carica \code{00\_environment\_check.ipynb}.
-\item Pannello a destra: \btn{Add Input}, cerca \code{luna16-lung-slices}, clicca \btn{+}.
-\item \btn{Session options}: Internet \btn{On}, Accelerator \btn{None}.
-\item In una cella nuova controlla il percorso (riquadro sotto).
-\item Esegui tutto il notebook: deve stampare \code{Libraries: OK} e \code{Dataset: OK} e mostrare una slice CT.
-\item Ripeti con \code{solutions/03\_project\_lung\_segmentation.ipynb} e Accelerator \btn{GPU T4 x2}:
-      annota il tempo di un'epoca, il Dice di validazione e quello di test.
-\end{enumerate}
+\blk{Provare con un notebook}
+\begin{steps}
+\item \ui{Create}\then\ui{New Notebook}, poi \ui{File}\then\ui{Import Notebook} con \file{00\_environment\_check.ipynb}.
+\item A destra \ui{Add Input}, cerca il dataset e clicca \ui{+}. In \ui{Session options}: Internet \ui{On}, Accelerator \ui{None}.
+\item Controlla il percorso (riquadro qui sotto), poi esegui tutto: deve stampare \chip{Libraries: OK} e \chip{Dataset: OK}.
+\item Rifai lo stesso con \file{solutions/03\_project\_lung\_segmentation.ipynb} e Accelerator \ui{GPU T4 x2}.
+      Annota il tempo di un'epoca e i Dice di validazione e di test.
+\end{steps}
+\vspace{6pt}
+\begin{verify}{Controllo del percorso}
+In una cella nuova:
+\begin{code}!find /kaggle/input -maxdepth 4 -name metadata.csv\end{code}
+Deve stampare:
+\begin{code}/kaggle/input/luna16-lung-slices/metadata.csv\\/kaggle/input/luna16-lung-slices/nodules/metadata.csv\end{code}
+Se il percorso è diverso va cambiata la riga \chip{DATA\_DIR} nei notebook.
+\end{verify}
 
-\infobox{Controllo del percorso.}{Esegui
-\par\vspace{0.2em}\hspace*{1em}\code{!find /kaggle/input -maxdepth 4 -name metadata.csv}
-\par\vspace{0.2em}Deve stampare
-\par\vspace{0.1em}\hspace*{1em}\code{/kaggle/input/luna16-lung-slices/metadata.csv}
-\par\hspace*{1em}\code{/kaggle/input/luna16-lung-slices/nodules/metadata.csv}
-\par\vspace{0.2em}Se il percorso è diverso, va cambiata la riga \code{DATA\_DIR} in ogni notebook.}
+\vspace{2pt}
+\begin{minipage}[t]{0.485\linewidth}
+\blk{Darlo agli studenti}
+\begin{steps}
+\item \ui{Settings}\then visibilità \ui{Public} (consigliato). In alternativa \ui{Share} con ogni studente.
+\item Comunica il nome completo \chip{<username>/luna16-lung-slices}: serve al passo B2 di \file{SETUP.md}.
+\end{steps}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\linewidth}
+\blk{Se cambiano i dati}
+\begin{steps}
+\item \ui{New Version}: carica il nuovo zip \textbf{sostituendo} i file.
+\item Nei notebook aperti \ui{Input}\then\ui{Check for updates}. Nome e percorso restano uguali.
+\end{steps}
+\end{minipage}
 
-\section{Darlo agli studenti}
-\begin{enumerate}
-\item \textbf{Pubblico} (consigliato): pagina del dataset\goto\btn{Settings}\goto visibilità \btn{Public}.
-\item Oppure \textbf{privato}: \btn{Share} e aggiungi lo username Kaggle di ogni studente.
-\item Comunica il nome completo, \code{\textless username\textgreater/luna16-lung-slices}: serve al passo B2 di \code{SETUP.md}.
-\end{enumerate}
-
-\section{Se cambiano i dati}
-Pagina del dataset\goto\btn{New Version}\goto carica il nuovo zip \textbf{sostituendo} i file.
-Nei notebook già aperti: pannello \btn{Input}\goto\btn{Check for updates}. Nome e percorso non cambiano,
-quindi i notebook restano uguali.
-
-\infobox{Valori attesi.}{Run di riferimento su CPU: notebook 03, Dice di validazione 0{,}989 e di test 0{,}978;
-notebook 04, baseline 0{,}833 e test 0{,}852. Se su GPU escono valori diversi, vanno aggiornati i testi dei notebook.}
+\vfill
+{\color{line}\rule{\linewidth}{0.6pt}}\par\vspace{5pt}
+{\footnotesize\color{soft}\textbf{Valori attesi} (run di riferimento su CPU) \quad
+notebook 03: Dice di validazione 0,989, di test 0,978 \quad·\quad notebook 04: baseline 0,833, test 0,852.
+Se su GPU escono valori diversi, vanno aggiornati i testi dei notebook.\par
+\vspace{3pt}Hands-on Advanced Topics in Machine Learning · MSc Health Informatics}
 
 \end{document}
