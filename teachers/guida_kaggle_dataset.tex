@@ -1,0 +1,93 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\babelprovide[import,main]{italian}
+\usepackage{mathpazo}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[margin=2.1cm,top=1.8cm,bottom=1.8cm,headsep=0.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue!50!black]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.3em}
+\setlist{itemsep=0.05em,topsep=0.1em,parsep=0pt}
+\titleformat{\section}{\large\bfseries\sffamily}{\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{0.8em}{0.15em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily Lung segmentation hands-on: per i docenti}
+\fancyhead[R]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\btn}[1]{\textsf{\textbf{#1}}}
+\newcommand{\goto}{\,$\rightarrow$\,}
+\newcommand{\infobox}[2]{%
+  \par\vspace{0.3em}\noindent\fcolorbox{black!35}{black!4}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{%
+  \textbf{\sffamily #1} #2}}\par\vspace{0.1em}}
+
+\begin{document}
+
+{\sffamily\bfseries\LARGE Il dataset del corso su Kaggle}\par\vspace{0.2em}
+{\sffamily\color{black!60} Passi essenziali per caricare \code{luna16-lung-slices} e far girare i notebook}\par
+\vspace{0.3em}\noindent\rule{\linewidth}{0.6pt}
+
+\infobox{Serve.}{Un account Kaggle con il \textbf{telefono verificato} (Settings\goto Phone verification):
+senza, nei notebook non si attivano né Internet né la GPU. E il file \code{luna16-lung-slices.zip} (396 MB),
+\textbf{senza scompattarlo}.}
+
+\section{Creare il dataset}
+\begin{enumerate}
+\item Su kaggle.com: \btn{Create}\goto\btn{New Dataset}.
+\item Trascina lo zip e aspetta che Kaggle finisca di scompattarlo (alcuni minuti).
+\item Titolo: \code{luna16-lung-slices}. L'indirizzo mostrato sotto deve finire con \code{/luna16-lung-slices}:
+      è il nome della cartella che i notebook cercano.
+\item Visibilità \btn{Private} per ora, poi \btn{Create}.
+\item Nella pagina del dataset imposta la licenza \textbf{CC BY 4.0}.
+\end{enumerate}
+
+\section{Controllare i file}
+Nella scheda \btn{Data} devono esserci le cartelle \code{images}, \code{labels}, \code{nodules},
+\code{volumes\_lowres}, \code{demo} e i file \code{metadata.csv}, \code{README.md}, \code{LICENSE.txt}.
+Dentro le cartelle i file devono finire in \code{.nii.gz}, non in \code{.nii}.
+
+\section{Provare con un notebook}
+\begin{enumerate}
+\item \btn{Create}\goto\btn{New Notebook}, poi \btn{File}\goto\btn{Import Notebook}: carica \code{00\_environment\_check.ipynb}.
+\item Pannello a destra: \btn{Add Input}, cerca \code{luna16-lung-slices}, clicca \btn{+}.
+\item \btn{Session options}: Internet \btn{On}, Accelerator \btn{None}.
+\item In una cella nuova controlla il percorso (riquadro sotto).
+\item Esegui tutto il notebook: deve stampare \code{Libraries: OK} e \code{Dataset: OK} e mostrare una slice CT.
+\item Ripeti con \code{solutions/03\_project\_lung\_segmentation.ipynb} e Accelerator \btn{GPU T4 x2}:
+      annota il tempo di un'epoca, il Dice di validazione e quello di test.
+\end{enumerate}
+
+\infobox{Controllo del percorso.}{Esegui
+\par\vspace{0.2em}\hspace*{1em}\code{!find /kaggle/input -maxdepth 4 -name metadata.csv}
+\par\vspace{0.2em}Deve stampare
+\par\vspace{0.1em}\hspace*{1em}\code{/kaggle/input/luna16-lung-slices/metadata.csv}
+\par\hspace*{1em}\code{/kaggle/input/luna16-lung-slices/nodules/metadata.csv}
+\par\vspace{0.2em}Se il percorso è diverso, va cambiata la riga \code{DATA\_DIR} in ogni notebook.}
+
+\section{Darlo agli studenti}
+\begin{enumerate}
+\item \textbf{Pubblico} (consigliato): pagina del dataset\goto\btn{Settings}\goto visibilità \btn{Public}.
+\item Oppure \textbf{privato}: \btn{Share} e aggiungi lo username Kaggle di ogni studente.
+\item Comunica il nome completo, \code{\textless username\textgreater/luna16-lung-slices}: serve al passo B2 di \code{SETUP.md}.
+\end{enumerate}
+
+\section{Se cambiano i dati}
+Pagina del dataset\goto\btn{New Version}\goto carica il nuovo zip \textbf{sostituendo} i file.
+Nei notebook già aperti: pannello \btn{Input}\goto\btn{Check for updates}. Nome e percorso non cambiano,
+quindi i notebook restano uguali.
+
+\infobox{Valori attesi.}{Run di riferimento su CPU: notebook 03, Dice di validazione 0{,}989 e di test 0{,}978;
+notebook 04, baseline 0{,}833 e test 0{,}852. Se su GPU escono valori diversi, vanno aggiornati i testi dei notebook.}
+
+\end{document}
