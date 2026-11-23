@@ -1,6 +1,6 @@
 # Animations
 
-Two GIFs for seminar 2 (models) and for the lab of day 4, when students change the U-Net.
+Two GIFs for seminar 3 (from tasks to the U-Net) and for the lab of day 4, when students change the U-Net.
 
 | File | What it shows |
 |---|---|

@@ -1,18 +1,25 @@
 # Seminars
 
-One slide deck for each seminar. The decks are a proposal: open them, change the words, add your pictures.
+One slide deck for each seminar. The decks are a proposal: tell us what to change.
 The first plan of each deck (thread, slide by slide, pictures, sources of the facts) is in `outlines/`; where a
 deck and its outline differ, the deck is the current version.
 
-| When | Deck | Slides | Time | Link |
+The slides are in `seminars/slides/` of this repository, one PowerPoint (`.pptx`) and one PDF for each deck.
+Open the PowerPoint to present: the speaker notes are in the notes of each slide.
+
+| When | Deck | Slides | Time | File in `seminars/slides/` |
 |---|---|---|---|---|
-| Day 1, opening | 0 - Course presentation | 11 | 15 min | https://claude.ai/artifact/1VLpvUBfAnVY39n3oENDce |
-| Day 1 | 1 - Deep learning in medicine | 15 | 30 min | https://claude.ai/artifact/VVQMDhRbJZgzDhpwwbUJxs |
-| Day 1 | 2 - Medical images and their files | 18 | 40 min | https://claude.ai/artifact/7WThw3RsDTrcChtGTGTdYA |
-| Day 2 | 3 - From tasks to the U-Net | 21 | 45 min | https://claude.ai/artifact/H8ao2pqUGVG1jKoZ3ao9RG |
-| Day 3 | 4 - Training a model and judging it | 20 | 45 min | https://claude.ai/artifact/42nQEMxCnKKPDFt1XfBLdg |
-| Day 5 | 5 - From notebook to web app | 17 | 25 min | https://claude.ai/artifact/MAAJAamEVuQhhnZZgBUJVx |
-| Optional | Extra - Images and clinical data together | 18 | 20 min | https://claude.ai/artifact/MPqQXuseyAdoeW5UP2tdZ2 |
+| Day 1, opening | 0 - Course presentation | 11 | 15 min | `0_course_presentation` |
+| Day 1 | 1 - Deep learning in medicine | 15 | 30 min | `1_deep_learning_in_medicine` |
+| Day 1 | 2 - Medical images and their files | 18 | 40 min | `2_medical_images_and_files` |
+| Day 2 | 3 - From tasks to the U-Net | 21 | 45 min | `3_from_tasks_to_the_unet` |
+| Day 3 | 4 - Training a model and judging it | 20 | 45 min | `4_training_and_judging_a_model` |
+| Day 5 | 5 - From notebook to web app | 17 | 25 min | `5_from_notebook_to_web_app` |
+| Optional | Extra - Images and clinical data together | 18 | 20 min | `extra_images_and_clinical_data` |
+
+Each slide of the PowerPoint is one picture of the slide, so the text cannot be edited in PowerPoint. To change a
+deck, ask Andrea: the original decks are in his Claude account, and after a change he exports the files again.
+If you need a slide you can edit, add a new slide in your copy of the PowerPoint.
 
 Day 4 has no seminar: the last part of deck 4 is a preview of day 4 (test set, failures, nodules). It shows the
 worst cases of our run as a question and leaves the answer to the students (the answer is in the speaker notes).
@@ -39,4 +46,4 @@ worst cases of our run as a question and leaves the answer to the students (the 
 
 ## Animations
 
-`animations/` has two GIFs that explain `strides` and `num_res_units` with a real nodule patch. Use them in seminar 2 and on day 4. See `animations/README.md`.
+`animations/` has two GIFs that explain `strides` and `num_res_units` with a real nodule patch. Use them in seminar 3 and on day 4. See `animations/README.md`.
